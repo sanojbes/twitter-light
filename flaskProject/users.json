@@ -1,0 +1,14 @@
+{
+"Posts":[
+  {
+    "ID": 1,
+    "Post": "Das ist der erste Post"
+  },
+  {
+    "ID": 2,
+    "Post": "Das ist der zweite Post"
+  }
+]
+}
+
+
