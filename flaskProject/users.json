@@ -8,7 +8,30 @@
                 "comment_id": 1,
                 "comment_content": "Hallo ich mag dich",
                 "comment_created_at": "23.11.2023  16:44"
+            },
+            {
+                "comment_id": 2,
+                "comment_content": "Alright",
+                "comment_created_at": "23.11.2023  20:18"
             }
         ]
+    },
+    {
+        "post_id": 2,
+        "post_content": "Demo",
+        "post_created_at": "23.11.2023  20:18",
+        "post_comments": [
+            {
+                "comment_id": 1,
+                "comment_content": "Alright",
+                "comment_created_at": "23.11.2023  20:18"
+            }
+        ]
+    },
+    {
+        "post_id": 3,
+        "post_content": "Ich bin Alfred und bin auch dabei!",
+        "post_created_at": "23.11.2023  20:19",
+        "post_comments": []
     }
 ]

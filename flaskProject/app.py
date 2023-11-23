@@ -23,7 +23,7 @@ def start():
             [],
         )
 
-        new_post.safe_in_Jsonfile("/Users/felixschussler/PycharmProjects/flaskProject/users.json")
+        new_post.safe_in_Jsonfile("users.json")
 
 
 
@@ -42,7 +42,7 @@ def updateComments(post_id):
                 datetime.now().year) + '  ' + datetime.now().strftime("%H:%M")
         )
 
-        new_comment.safe_comment_in_Json_file("/Users/felixschussler/PycharmProjects/flaskProject/users.json",post_id)
+        new_comment.safe_comment_in_Json_file("users.json",post_id)
 
     posts = get_all_posts()
 

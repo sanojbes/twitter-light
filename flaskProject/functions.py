@@ -1,14 +1,14 @@
 import json
 
 def get_all_posts():
-    f = open('/Users/felixschussler/PycharmProjects/flaskProject/users.json')
+    f = open('users.json')
     posts = json.load(f)
 
     f.close()
     return posts
 
 def get_all_comments(post_id):
-    with open('/Users/felixschussler/PycharmProjects/flaskProject/users.json', 'r') as json_file:
+    with open('users.json', 'r') as json_file:
         posts = json.load(json_file)
         target_key = 'post_comments'
 
