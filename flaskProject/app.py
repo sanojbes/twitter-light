@@ -1,61 +1,52 @@
-from flask import Flask, jsonify, request
+from _datetime import datetime
+from flask import Flask, jsonify, request, render_template
 import json
-
+from post import Post
+from functions import get_all_posts,get_max_id, get_all_comments, get_max_comment_id
+from comment import Comment
 
 app = Flask(__name__)
 
+@app.route('/', methods=['GET'])
+def home():
+    posts = get_all_posts()
+    return render_template('index.html', posts = posts)
 
-# Endpunkt, um alle Benutzerdaten abzurufen
-@app.route('/users', methods=['GET'])
-def get_users():
-    users = getJson()
-    return jsonify(users)
+@app.route('/posts', methods=['GET', 'POST'])
+def start():
+    if request.method == 'POST':
+        new_post = Post(
+            get_max_id(),
+            request.form['content'],
+            str(datetime.now().day) + '.' + str(datetime.now().month) + '.' + str(
+                datetime.now().year) + '  ' + datetime.now().strftime("%H:%M"),
+            [],
+        )
 
-# Endpunkt, um Daten eines bestimmten Benutzers abzurufen
-@app.route('/users/<user_id>', methods=['GET'])
-def get_user(user_id):
-    users = getJson()
-    for post in users['Posts']:
-        if post['ID'] == int(user_id):
-            return jsonify(post)
-    else:
-        return jsonify({'error': 'User not found'}), 404
-
-@app.route('/posts', methods=['POST'])
-def createPost():
-    # Die Daten aus dem POST-Antrag abrufen
-    data = request.json
-    max_id = countID()
-    users = getJson()
+        new_post.safe_in_Jsonfile("/Users/felixschussler/PycharmProjects/flaskProject/users.json")
 
 
-    # Überprüfen, ob erforderliche Felder vorhanden sind
-    if max_id not in data:
-        return jsonify({'error': 'ID and Post are required'}), 400
-    # Append the new data to the existing data
-    users['Posts'].append(data)
-    # Neue Daten zum Speicher hinzufügen
-    with open('/Users/felixschussler/PycharmProjects/flaskProject/users.json', 'w') as f:
-        json.dump(users['Posts'], f)
-        # Write the updated data back to the file
 
-    return 'Data written to file'
+    posts = get_all_posts()
+    print(posts)
 
+    return render_template('index.html', posts = posts)
 
-#Liest die users.json file ein
-def getJson ():
-    f = open('/Users/felixschussler/PycharmProjects/flaskProject/users.json')
-    users = json.load(f)
-    print(users)
+@app.route('/comments/<post_id>', methods=['GET','POST'])
+def updateComments(post_id):
+    if request.method == 'POST':
+        new_comment = Comment(
+            get_max_comment_id(post_id),
+            request.form['comment_content'],
+            str(datetime.now().day) + '.' + str(datetime.now().month) + '.' + str(
+                datetime.now().year) + '  ' + datetime.now().strftime("%H:%M")
+        )
 
-    f.close()
-    return users
+        new_comment.safe_comment_in_Json_file("/Users/felixschussler/PycharmProjects/flaskProject/users.json",post_id)
 
-#ID hochzählen
-def countID():
-    users = getJson()
-    max_id = max(entry['ID'] for entry in users['Posts'])
-    return max_id
+    posts = get_all_posts()
+
+    return render_template('index.html', posts = posts)
 
 if __name__ == '__main__':
     app.run()

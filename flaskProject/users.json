@@ -1,14 +1,14 @@
-{
-"Posts":[
-  {
-    "ID": 1,
-    "Post": "Das ist der erste Post"
-  },
-  {
-    "ID": 2,
-    "Post": "Das ist der zweite Post"
-  }
+[
+    {
+        "post_id": 1,
+        "post_content": "Hallo ich bin die Sina",
+        "post_created_at": "23.11.2023  16:44",
+        "post_comments": [
+            {
+                "comment_id": 1,
+                "comment_content": "Hallo ich mag dich",
+                "comment_created_at": "23.11.2023  16:44"
+            }
+        ]
+    }
 ]
-}
-
-
