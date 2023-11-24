@@ -1,16 +1,22 @@
-from _datetime import datetime
+from datetime import datetime
 from flask import Flask, jsonify, request, render_template
 import json
 from post import Post
 from functions import get_all_posts,get_max_id, get_all_comments, get_max_comment_id
 from comment import Comment
+from network import *
+
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def home():
     posts = get_all_posts()
-    return render_template('index.html', posts = posts)
+    get_ownip()
+    get_time()
+    send_heartbeat()
+
+    return render_template('index.html', posts=posts)
 
 @app.route('/posts', methods=['GET', 'POST'])
 def start():
@@ -19,7 +25,7 @@ def start():
             get_max_id(),
             request.form['content'],
             str(datetime.now().day) + '.' + str(datetime.now().month) + '.' + str(
-                datetime.now().year) + '  ' + datetime.now().strftime("%H:%M"),
+                datetime.now().year) + '  ' + datetime.now().strftime("%H:%M:%S"),
             [],
         )
 
@@ -39,14 +45,16 @@ def updateComments(post_id):
             get_max_comment_id(post_id),
             request.form['comment_content'],
             str(datetime.now().day) + '.' + str(datetime.now().month) + '.' + str(
-                datetime.now().year) + '  ' + datetime.now().strftime("%H:%M")
+                datetime.now().year) + '  ' + datetime.now().strftime("%H:%M:%S")
         )
 
         new_comment.safe_comment_in_Json_file("users.json",post_id)
 
     posts = get_all_posts()
 
+
     return render_template('index.html', posts = posts)
 
 if __name__ == '__main__':
     app.run()
+

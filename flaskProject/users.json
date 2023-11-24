@@ -33,5 +33,27 @@
         "post_content": "Ich bin Alfred und bin auch dabei!",
         "post_created_at": "23.11.2023  20:19",
         "post_comments": []
+    },
+    {
+        "post_id": 4,
+        "post_content": "Test",
+        "post_created_at": "24.11.2023  13:32:05S",
+        "post_comments": [
+            {
+                "comment_id": 1,
+                "comment_content": "Test1",
+                "comment_created_at": "24.11.2023  13:32"
+            },
+            {
+                "comment_id": 2,
+                "comment_content": "g",
+                "comment_created_at": "24.11.2023  13:33:05"
+            },
+            {
+                "comment_id": 3,
+                "comment_content": "Test1",
+                "comment_created_at": "24.11.2023  16:17:19"
+            }
+        ]
     }
 ]

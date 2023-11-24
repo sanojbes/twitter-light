@@ -48,3 +48,19 @@ def countID():
     users = getJson()
     max_id = max(entry['ID'] for entry in users['Posts'])
     return max_id
+
+#
+
+## importing socket module
+import socket
+## getting the hostname by socket.gethostname() method
+    hostname = socket.gethostname()
+## getting the IP address using socket.gethostbyname() method
+    ip_address = socket.gethostbyname(hostname)
+## printing the hostname and ip_address
+    print(f"Hostname: {hostname}")
+    print(f"IP Address: {ip_address}")
+
+
+if __name__ == '__main__':
+    socketio.run(app)

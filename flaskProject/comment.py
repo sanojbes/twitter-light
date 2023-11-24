@@ -25,7 +25,6 @@ class Comment:
 
         for post in all_posts:
             if int(post["post_id"]) == int(post_id):
-                print('HALLO ICH WAR HIER')
                 print(post)
                 post["post_comments"].append(new_comment)
                 break
