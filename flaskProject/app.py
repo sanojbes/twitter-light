@@ -11,6 +11,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def home():
+
     posts = get_all_posts()
     get_ownip()
     get_time()
