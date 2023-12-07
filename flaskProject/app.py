@@ -8,14 +8,14 @@ from network import *
 
 
 app = Flask(__name__)
-
+global network_instance
+network_instance=Network()
 @app.route('/', methods=['GET'])
 def home():
-
     posts = get_all_posts()
-    get_ownip()
-    get_time()
-    send_heartbeat()
+    network_instance.get_ownip()
+    network_instance.get_time()
+    network_instance.send_heartbeat()
 
     return render_template('index.html', posts=posts)
 
@@ -57,5 +57,4 @@ def updateComments(post_id):
     return render_template('index.html', posts = posts)
 
 if __name__ == '__main__':
-    app.run()
-
+    app.run(host=network_instance.get_ownip(), port=5000, debug=True, threaded=True)
