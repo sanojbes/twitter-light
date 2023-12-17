@@ -13,6 +13,11 @@
                 "comment_id": 2,
                 "comment_content": "Alright",
                 "comment_created_at": "23.11.2023  20:18"
+            },
+            {
+                "comment_id": 3,
+                "comment_content": "demo",
+                "comment_created_at": "17.12.2023  10:40:25"
             }
         ]
     },
@@ -40,36 +45,6 @@
                 "comment_id": 4,
                 "comment_content": "Hi",
                 "comment_created_at": "7.12.2023  17:28:16"
-            },
-            {
-                "comment_id": 5,
-                "comment_content": "Hi",
-                "comment_created_at": "7.12.2023  17:28:22"
-            },
-            {
-                "comment_id": 6,
-                "comment_content": "d",
-                "comment_created_at": "7.12.2023  17:28:35"
-            },
-            {
-                "comment_id": 7,
-                "comment_content": "Hi",
-                "comment_created_at": "7.12.2023  17:28:46"
-            },
-            {
-                "comment_id": 8,
-                "comment_content": "Demo",
-                "comment_created_at": "7.12.2023  17:29:10"
-            },
-            {
-                "comment_id": 9,
-                "comment_content": "d",
-                "comment_created_at": "7.12.2023  17:29:28"
-            },
-            {
-                "comment_id": 10,
-                "comment_content": "Demo",
-                "comment_created_at": "7.12.2023  17:32:39"
             }
         ]
     },
@@ -78,27 +53,5 @@
         "post_content": "Ich bin Alfred und bin auch dabei!",
         "post_created_at": "23.11.2023  20:19",
         "post_comments": []
-    },
-    {
-        "post_id": 4,
-        "post_content": "Test",
-        "post_created_at": "24.11.2023  13:32:05S",
-        "post_comments": [
-            {
-                "comment_id": 1,
-                "comment_content": "Test1",
-                "comment_created_at": "24.11.2023  13:32"
-            },
-            {
-                "comment_id": 2,
-                "comment_content": "g",
-                "comment_created_at": "24.11.2023  13:33:05"
-            },
-            {
-                "comment_id": 3,
-                "comment_content": "Test1",
-                "comment_created_at": "24.11.2023  16:17:19"
-            }
-        ]
     }
 ]

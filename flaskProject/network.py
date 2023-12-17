@@ -1,6 +1,8 @@
 import socket
+import threading
 import time
 import uuid
+import struct
 from datetime import datetime
 
 class Network:
@@ -86,11 +88,10 @@ class Network:
 
     @staticmethod
     def send_heartbeat():
-        time_diff = Network.get_time() - 1700835784
-        MCAST_GRP = '224.1.1.1'
-        MCAST_PORT = 5007
+        while True:
+            MCAST_GRP = '224.1.1.1'
+            MCAST_PORT = 5007
 
-        if time_diff >= 3:
             heartbeat_message = {
                 "id": str(uuid.uuid4()),
                 "sender": Network.get_ownip(),
@@ -102,7 +103,40 @@ class Network:
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
             sock.sendto(heartbeat_msg.encode(), (MCAST_GRP, MCAST_PORT))
             print(heartbeat_msg)
-            return heartbeat_msg
+
+            # Warte für 3 Sekunden, bevor die nächste Herzschlagnachricht gesendet wird
+            time.sleep(3)
+
+    def start_sending_heartbeat(self):
+        # Erstelle einen Thread für die Methode send_heartbeat
+        sender_thread = threading.Thread(target=self.send_heartbeat)
+        # Setze den Thread als Hintergrundthread, damit er beendet wird, wenn das Hauptprogramm beendet wird
+        sender_thread.daemon = True
+        # Starte den Thread
+        sender_thread.start()
+
+    @staticmethod
+    def receive_heartbeat():
+        MCAST_GRP = '224.1.1.1'
+        MCAST_PORT = 5007
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind(('', MCAST_PORT))
+        mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+        while True:
+            message = sock.recv(10240)
+            # Hier kannst du die empfangene Nachricht verarbeiten oder entsprechend reagieren
+            print(f"Received message: {message.decode('utf-8')}")
+
+    def start_listening(self):
+        # Erstelle einen Thread für die Methode receive_heartbeat
+        listener_thread = threading.Thread(target=self.receive_heartbeat)
+        # Setze den Thread als Hintergrundthread, damit er beendet wird, wenn das Hauptprogramm beendet wird
+        listener_thread.daemon = True
+        # Starte den Thread
+        listener_thread.start()
+
 
 if __name__ == '__main__':
     network_instance = Network()
