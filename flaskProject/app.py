@@ -58,8 +58,11 @@ if __name__ == '__main__':
     #start heartbeart + listen
     #network_instance.start_listening()
     #network_instance.start_sending_heartbeat()
-    network_instance.send_heartbeat()
-    network_instance.receive_heartbeat()
+    sender_thread = threading.Thread(target=network_instance.send_heartbeat)
+    receiver_thread = threading.Thread(target=network_instance.receive_heartbeat)
+
+    sender_thread.start()
+    receiver_thread.start()
     #start application
     #app.run(host='192.168.178.203', port=5000, debug=False, threaded=True)
     #app.run(host='134.103.108.31', port=5000, debug=False, threaded=True)

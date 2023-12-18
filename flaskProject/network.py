@@ -89,23 +89,22 @@ class Network:
 
     @staticmethod
     def send_heartbeat():
-        #while True:
-            MCAST_GRP = '192.168.178.255'
-            MCAST_PORT = 5009
+        MCAST_GRP = '192.168.178.255'  # Broadcast-Adresse für das lokale Netzwerk
+        MCAST_PORT = 5009
 
-            heartbeat_message = {
-                "heartbeat_messenger": platform.node(),
-                "id": str(uuid.uuid4()),
-                "sender": Network.get_ownip(),
-                "timestamp": Network.get_time(),
-            }
+        heartbeat_message = {
+            "heartbeat_messenger": platform.node(),
+            "id": str(uuid.uuid4()),
+            "sender": Network.get_ownip(),
+            "timestamp": Network.get_time(),
+        }
 
-            heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['heartbeat_messenger']}"
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-            #sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-            sock.sendto(heartbeat_msg.encode(), (MCAST_GRP, MCAST_PORT))
-            print(heartbeat_msg)
-            sock.close()
+        heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['heartbeat_messenger']}"
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        sock.sendto(heartbeat_msg.encode(), (MCAST_GRP, MCAST_PORT))
+        print(heartbeat_msg + "SENDE ICH")
+        sock.close()
 
             # Warte für 3 Sekunden, bevor die nächste Herzschlagnachricht gesendet wird
             #time.sleep(3)
@@ -121,11 +120,10 @@ class Network:
 
     @staticmethod
     def receive_heartbeat():
-        #MCAST_GRP = '224.0.0.20'
         MCAST_PORT = 5009
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         sock.bind(('192.168.178.203', MCAST_PORT))
 
         print("Listening to broadcast messages")
