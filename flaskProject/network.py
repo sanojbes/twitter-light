@@ -73,12 +73,7 @@ class Network:
             return None
 
     @staticmethod
-    def get_ownip():
-        hostname = socket.gethostname()
-        ip_address = socket.gethostbyname(hostname)
-        print(f"Hostname: {hostname}")
-        print(f"IP Address: {ip_address}")
-        return ip_address
+
 
     @staticmethod
     def get_time():
@@ -143,13 +138,55 @@ class Network:
         listener_thread.start()
 
 
+
+    def send_message(message, ip_address, port):
+        try:
+            # Erstelle einen Socket
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            # Sende die Nachricht an die angegebene IP-Adresse und den Port
+            sock.sendto(message.encode(), (ip_address, port))
+            sock.close()
+        except socket.error as e:
+            print(f"Fehler beim Senden der Nachricht: {e}")
+
+
+    import socket
+
+    def receive_message(port):
+        try:
+            # Erstelle einen Socket
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            # Binde den Socket an eine IP-Adresse und Portnummer
+            sock.bind(('0.0.0.0', port))
+
+            print(f"Warte auf Nachrichten auf Port {port}...")
+
+            while True:
+                # Empfange Nachrichten
+                data, addr = sock.recvfrom(1024)
+                print(f"Nachricht empfangen von {addr}: {data.decode()}")
+        except socket.error as e:
+            print(f"Fehler beim Empfangen der Nachricht: {e}")
+
+    # Beispielaufruf
+    port_number = 5009  # Verwende denselben Port, den Laptop 1 verwendet hat
+
+    receive_message(port_number)
+
+
 if __name__ == '__main__':
     network_instance = Network()
     #network_instance.send_heartbeat()
-    own_ip = network_instance.get_ownip()
-    network_instance.add_client(own_ip)
-    network_instance.add_host(own_ip)
-    print(network_instance.clients_network)
-    print(network_instance.replication_network)
-    print(network_instance.form_ring(network_instance.replication_network))
-    print(network_instance.get_neighbour(network_instance.ring, str(own_ip), "left"))
+    #own_ip = network_instance.get_ownip()
+    #network_instance.add_client(own_ip)
+    #network_instance.add_host(own_ip)
+    #print(network_instance.clients_network)
+    #print(network_instance.replication_network)
+    #print(network_instance.form_ring(network_instance.replication_network))
+    #print(network_instance.get_neighbour(network_instance.ring, str(own_ip), "left"))
+    # Beispielaufruf
+    ip_address_laptop_2 = '192.168.178.204'  # IP-Adresse des anderen Laptops im Netzwerk
+    port_number = 5009  # Verwende einen beliebigen freien Port
+
+    message_to_send = "Hallo Laptop 2, wie geht es dir?"
+    network_instance.send_message(message_to_send, ip_address_laptop_2, port_number)
