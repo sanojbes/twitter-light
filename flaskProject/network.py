@@ -4,6 +4,7 @@ import time
 import uuid
 import struct
 from datetime import datetime
+import platform
 
 class Network:
     clients_network = []
@@ -88,24 +89,27 @@ class Network:
 
     @staticmethod
     def send_heartbeat():
-        while True:
-            MCAST_GRP = '224.1.1.1'
-            MCAST_PORT = 5007
+        #while True:
+            MCAST_GRP = '192.168.178.255'
+            MCAST_PORT = 5009
 
             heartbeat_message = {
+                "heartbeat_messenger": platform.node(),
                 "id": str(uuid.uuid4()),
                 "sender": Network.get_ownip(),
                 "timestamp": Network.get_time(),
             }
 
-            heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
+            heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['heartbeat_messenger']}"
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-            sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+            #sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
             sock.sendto(heartbeat_msg.encode(), (MCAST_GRP, MCAST_PORT))
             print(heartbeat_msg)
+            sock.close()
 
             # Warte für 3 Sekunden, bevor die nächste Herzschlagnachricht gesendet wird
-            time.sleep(3)
+            #time.sleep(3)
+
 
     def start_sending_heartbeat(self):
         # Erstelle einen Thread für die Methode send_heartbeat
@@ -117,17 +121,20 @@ class Network:
 
     @staticmethod
     def receive_heartbeat():
-        MCAST_GRP = '224.1.1.1'
-        MCAST_PORT = 5007
+        #MCAST_GRP = '224.0.0.20'
+        MCAST_PORT = 5009
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(('', MCAST_PORT))
-        mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
-        sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+        sock.bind(('192.168.178.203', MCAST_PORT))
+
+        print("Listening to broadcast messages")
+
         while True:
-            message = sock.recv(10240)
-            # Hier kannst du die empfangene Nachricht verarbeiten oder entsprechend reagieren
-            print(f"Received message: {message.decode('utf-8')}")
+            data, addr = sock.recvfrom(1024)
+            if data:
+                print("Received broadcast message:", data.decode())
+
 
     def start_listening(self):
         # Erstelle einen Thread für die Methode receive_heartbeat
@@ -140,10 +147,11 @@ class Network:
 
 if __name__ == '__main__':
     network_instance = Network()
-    network_instance.send_heartbeat()
+    #network_instance.send_heartbeat()
     own_ip = network_instance.get_ownip()
     network_instance.add_client(own_ip)
     network_instance.add_host(own_ip)
     print(network_instance.clients_network)
     print(network_instance.replication_network)
+    print(network_instance.form_ring(network_instance.replication_network))
     print(network_instance.get_neighbour(network_instance.ring, str(own_ip), "left"))

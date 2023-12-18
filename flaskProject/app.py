@@ -56,8 +56,11 @@ def updateComments(post_id):
 
 if __name__ == '__main__':
     #start heartbeart + listen
-    network_instance.start_listening()
-    network_instance.start_sending_heartbeat()
-    app.run(host='192.168.178.203', port=5000, debug=True, threaded=True)
-
-
+    #network_instance.start_listening()
+    #network_instance.start_sending_heartbeat()
+    network_instance.send_heartbeat()
+    network_instance.receive_heartbeat()
+    #start application
+    #app.run(host='192.168.178.203', port=5000, debug=False, threaded=True)
+    #app.run(host='134.103.108.31', port=5000, debug=False, threaded=True)
+    app.run(host='0.0.0.0', port=5009, debug=False, threaded=True)
