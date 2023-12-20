@@ -159,6 +159,4 @@ class Network:
 
 if __name__ == '__main__':
     network_instance = Network()
-    wlan_ip = network_instance.get_wlan_ip()
-
-    print(f"IP-Adresse des WLAN-Adapters: {wlan_ip}")
+    print(network_instance.get_wlan_ip())
