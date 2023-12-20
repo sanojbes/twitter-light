@@ -21,7 +21,7 @@ class BroadcastClient:
         thread.start()
 
 if __name__ == "__main__":
-    broadcast_address = ('192.168.178.255', 37020)  # Replace with your chosen broadcast address and port
+    broadcast_address = ('192.168.114.255', 37020)  # Replace with your chosen broadcast address and port
 
     client = BroadcastClient(broadcast_address)
     client.start()
