@@ -89,7 +89,7 @@ class Network:
     @staticmethod
     def send_heartbeat():
         while True:
-            MCAST_GRP = '224.1.1.1'
+            MCAST_GRP = '224.0.0.120'
             MCAST_PORT = 5007
 
             heartbeat_message = {
@@ -117,7 +117,7 @@ class Network:
 
     @staticmethod
     def receive_heartbeat():
-        MCAST_GRP = '224.1.1.1'
+        MCAST_GRP = '224.0.0.120'
         MCAST_PORT = 5007
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
