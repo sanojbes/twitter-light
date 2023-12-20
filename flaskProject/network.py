@@ -73,11 +73,30 @@ class Network:
 
     @staticmethod
     def get_ownip():
+        ## getting the hostname by socket.gethostname() method
         hostname = socket.gethostname()
+        ## getting the IP address using socket.gethostbyname() method
         ip_address = socket.gethostbyname(hostname)
+        ## printing the hostname and ip_address
         print(f"Hostname: {hostname}")
         print(f"IP Address: {ip_address}")
         return ip_address
+
+    @staticmethod
+    def get_wlan_ip():
+        # Hostname des lokalen Geräts abrufen
+        hostname = socket.gethostname()
+
+        # IP-Adressen des Geräts abrufen
+        ip_addresses = socket.gethostbyname_ex(hostname)[-1]
+
+        # Filtern nach IPv4-Adressen und Nicht-localhost-Adressen
+        wlan_ips = [ip for ip in ip_addresses if not ip.startswith('127.') and not ip.startswith('::1')]
+
+        if wlan_ips:
+            return wlan_ips[0]  # Gibt die erste WLAN-IP-Adresse zurück
+
+        return "Keine WLAN-IP-Adresse gefunden"
 
     @staticmethod
     def get_time():
@@ -140,10 +159,6 @@ class Network:
 
 if __name__ == '__main__':
     network_instance = Network()
-    network_instance.send_heartbeat()
-    own_ip = network_instance.get_ownip()
-    network_instance.add_client(own_ip)
-    network_instance.add_host(own_ip)
-    print(network_instance.clients_network)
-    print(network_instance.replication_network)
-    print(network_instance.get_neighbour(network_instance.ring, str(own_ip), "left"))
+    wlan_ip = network_instance.get_wlan_ip()
+
+    print(f"IP-Adresse des WLAN-Adapters: {wlan_ip}")
