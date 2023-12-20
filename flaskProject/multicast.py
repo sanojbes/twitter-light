@@ -22,8 +22,8 @@ class MulticastClient:
     def receive_messages(self):
         while True:
             try:
-                data, _ = self.sock.recvfrom(1024)
-                print(f'Received message: {data.decode("utf-8")}')
+                data, addr = self.sock.recvfrom(1024)
+                print(f'Received message: {data.decode("utf-8")} from {addr}')
             except socket.timeout:
                 continue
 
@@ -38,6 +38,6 @@ if __name__ == "__main__":
     client = MulticastClient(multicast_group, server_address)
     client.start()
     for _ in range(10):  
-        print(f'Send message: {client.send_message("Hi wie gehts?")}')
+        print(f'Send message: {client.send_message("Hi wie gehts? von Jonas")}')
       
         
