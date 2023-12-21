@@ -10,7 +10,7 @@ class BroadcastClient:
 
     def send_message(self, message):
         self.sock.sendto(message.encode('utf-8'), self.broadcast_address)
-
+ 
     def receive_messages(self):
         while True:
             data, addr = self.sock.recvfrom(1024)
