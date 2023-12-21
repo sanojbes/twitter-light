@@ -27,11 +27,7 @@ def start():
                 datetime.now().year) + '  ' + datetime.now().strftime("%H:%M:%S"),
             [],
         )
-
         new_post.safe_in_Jsonfile("users.json")
-
-
-
     posts = get_all_posts()
     print(posts)
 
@@ -46,12 +42,8 @@ def updateComments(post_id):
             str(datetime.now().day) + '.' + str(datetime.now().month) + '.' + str(
                 datetime.now().year) + '  ' + datetime.now().strftime("%H:%M:%S")
         )
-
         new_comment.safe_comment_in_Json_file("users.json",post_id)
-
     posts = get_all_posts()
-
-
     return render_template('index.html', posts = posts)
 
 if __name__ == '__main__':

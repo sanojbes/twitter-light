@@ -4,6 +4,7 @@ import time
 import uuid
 import struct
 from datetime import datetime
+import multicast
 
 class Network:
     clients_network = []
@@ -106,57 +107,23 @@ class Network:
         return timest
 
     @staticmethod
-    def send_heartbeat():
-        while True:
-            MCAST_GRP = '224.0.0.120'
-            MCAST_PORT = 5007
+    def send_and_receive_heartbeat():
+        multicast_group = '224.0.0.100'  # Replace with your chosen multicast group
+        server_address = (multicast_group, 10000)  # Replace 10000 with your chosen port number
 
-            heartbeat_message = {
-                "id": str(uuid.uuid4()),
-                "sender": Network.get_ownip(),
-                "timestamp": Network.get_time(),
-            }
+        server = multicast.MulticastClient(multicast_group, server_address)
+        server.start()
 
-            heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-            sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-            sock.sendto(heartbeat_msg.encode(), (MCAST_GRP, MCAST_PORT))
-            print(heartbeat_msg)
+        heartbeat_message = {
+            "id": str(uuid.uuid4()),
+            "sender": Network.get_ownip(),
+            "timestamp": Network.get_time(),
+        }
 
-            # Warte für 3 Sekunden, bevor die nächste Herzschlagnachricht gesendet wird
-            time.sleep(3)
-
-    def start_sending_heartbeat(self):
-        # Erstelle einen Thread für die Methode send_heartbeat
-        sender_thread = threading.Thread(target=self.send_heartbeat)
-        # Setze den Thread als Hintergrundthread, damit er beendet wird, wenn das Hauptprogramm beendet wird
-        sender_thread.daemon = True
-        # Starte den Thread
-        sender_thread.start()
-
-    @staticmethod
-    def receive_heartbeat():
-        MCAST_GRP = '224.0.0.120'
-        MCAST_PORT = 5007
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(('', MCAST_PORT))
-        mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
-        sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-        while True:
-            message = sock.recv(10240)
-            # Hier kannst du die empfangene Nachricht verarbeiten oder entsprechend reagieren
-            print(f"Received message: {message.decode('utf-8')}")
-
-    def start_listening(self):
-        # Erstelle einen Thread für die Methode receive_heartbeat
-        listener_thread = threading.Thread(target=self.receive_heartbeat)
-        # Setze den Thread als Hintergrundthread, damit er beendet wird, wenn das Hauptprogramm beendet wird
-        listener_thread.daemon = True
-        # Starte den Thread
-        listener_thread.start()
+        heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
+        server.send_message(heartbeat_msg)
 
 
 if __name__ == '__main__':
     network_instance = Network()
-    print(network_instance.get_wlan_ip())
+    network_instance.send_and_receive_heartbeat()

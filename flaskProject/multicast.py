@@ -1,6 +1,7 @@
 import socket
 import struct
 import threading
+import time
 
 class MulticastClient:
     def __init__(self, multicast_group, server_address):
@@ -17,7 +18,15 @@ class MulticastClient:
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
     def send_message(self, message):
-        self.sock.sendto(message.encode('utf-8'), self.server_address)
+        send_thread = threading.Thread(target=self.send_message_thread, args=(message,))
+        send_thread.daemon = True  # Setze den Thread als Daemon, um ihn zu beenden, wenn das Hauptprogramm endet
+        send_thread.start()
+
+    def send_message_thread(self, message):
+        while True:
+            # Hier bleibt die ursprüngliche Logik der Nachrichtenübermittlung unverändert
+            self.sock.sendto(message.encode('utf-8'), self.server_address)
+            time.sleep(3)
 
     def receive_messages(self):
         while True:
@@ -37,7 +46,6 @@ if __name__ == "__main__":
 
     client = MulticastClient(multicast_group, server_address)
     client.start()
-    for _ in range(10):  
-        print(f'Send message: {client.send_message("Hi wie gehts? von Jonas")}')
+    print(f'Send message: {client.send_message("Hi wie gehts? von Jonas")}')
       
         
