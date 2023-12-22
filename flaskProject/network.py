@@ -163,19 +163,23 @@ class Network:
             if host == self.leader:
                 self.elect_leader()
 
+    def create_message(self):
+        heartbeat_message = {
+            "id": str(uuid.uuid4()),
+            "sender": server.get_network_ip(),
+            "leader": server.leader,
+        }
+        heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}"
+
+        return heartbeat_msg
+
 if __name__ == "__main__":
     #Instanz Network + Multicast
     server = Network()
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
-    heartbeat_message = {
-        "id": str(uuid.uuid4()),
-        "sender": server.get_network_ip(),
-        "leader": server.leader,
-        }
-    heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}"
 
-    multicastclient.send_message(heartbeat_msg)
+    multicastclient.send_message(server)
     #Listen to Multicast (Heartbeat)
     multicastclient.start(server)
     #Check First Host

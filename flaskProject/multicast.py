@@ -18,13 +18,14 @@ class MulticastClient:
         mreq = struct.pack('4sL', group, socket.INADDR_ANY)
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
-    def send_message(self, message):
-        send_thread = threading.Thread(target=self.send_message_thread, args=(message,))
+    def send_message(self, network):
+        send_thread = threading.Thread(target=self.send_message_thread, args=(network,))
         send_thread.daemon = True  # Setze den Thread als Daemon, um ihn zu beenden, wenn das Hauptprogramm endet
         send_thread.start()
 
-    def send_message_thread(self, message):
+    def send_message_thread(self, network):
         while True:
+            message = network.create_message()
             self.sock.sendto(message.encode('utf-8'), self.server_address)
             time.sleep(3)
 
@@ -44,7 +45,6 @@ class MulticastClient:
                 if message_parts[0] == 'HB':
                     network.add_host(message_parts[2])
                     network.last_heartbeat[host] = time.time()
-
 
                     if not check_thread_started:
                         check_thread = threading.Thread(target=network.check_heartbeats)
