@@ -1,6 +1,7 @@
 import threading
 import time
 import socket
+import multicast
 
 class Network:
     """
@@ -98,7 +99,10 @@ class Network:
         else:
             print(f"Host {client} was already removed")
 
-
+    def check_first_host(self):
+        time.sleep(4)
+        if self.leader is None:
+            self.elect_leader()
 
     def receive_messages(self):
         while True:
@@ -111,6 +115,7 @@ class Network:
 
                 # If the first part of the message is 'HB', update the last heartbeat timestamp
                 if message_parts[0] == 'HB':
+                    self.add_host(host)
                     self.last_heartbeat[host] = time.time()
 
             except socket.timeout:
@@ -136,11 +141,11 @@ class Network:
 
     def add_host(self, host):
         """
-        Adds a new host to the network and triggers a leader election.
+        Adds a new host to the network
         """
         if host not in self.replication_network:
             self.replication_network.append(host)
-            self.elect_leader()
+
         else:
             print(f"Host {host} was already discovered")
 
@@ -152,3 +157,16 @@ class Network:
             self.replication_network.remove(host)
             if host == self.leader:
                 self.elect_leader()
+
+if __name__ == "__main__":
+    #Instanz Network + Multicast
+    server = Network()
+    multicastclient = multicast.MulticastClient('224.0.0.100', 10000)
+    #Send multicast (Heartbeat)
+    multicastclient.send_message('heartbeat')
+    #Listen to Multicast (Heartbeat)
+    multicastclient.start()
+    #Check First Host
+    server.check_first_host()
+    #Check Heartbeat
+    server.check_heartbeats()

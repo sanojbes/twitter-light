@@ -24,7 +24,6 @@ class MulticastClient:
 
     def send_message_thread(self, message):
         while True:
-            # Hier bleibt die ursprüngliche Logik der Nachrichtenübermittlung unverändert
             self.sock.sendto(message.encode('utf-8'), self.server_address)
             time.sleep(3)
 
