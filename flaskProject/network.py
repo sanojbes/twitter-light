@@ -3,6 +3,33 @@ import time
 import socket
 
 class Network:
+    """
+    Represents a network of hosts and clients.
+
+    Attributes:
+    - clients_network (list): List of clients in the network.
+    - replication_network (list): List of replication servers in the network.
+    - replication_network_ring (list): List of replication servers arranged in a ring.
+    - clients_network_ring (list): List of clients arranged in a ring.
+    - ring (list): The current ring being used for replication.
+
+    Methods:
+    - __init__(): Initializes the Network object.
+    - add_host(host): Adds a host to the replication network.
+    - remove_host(host): Removes a host from the replication network.
+    - add_client(host): Adds a client to the network.
+    - remove_client(client): Removes a client from the network.
+    - get_hosts(): Returns the replication network.
+    - get_client(): Returns the clients network.
+    - form_ring(replication_network): Forms a ring from the replication network.
+    - get_neighbour(ring, current_node_ip, direction): Returns the neighbour of a node in the ring.
+    - get_ownip(): Returns the IP address of the current device.
+    - get_network_ip(): Returns the network IP address of the current device.
+    - get_time(): Returns the current timestamp.
+    - send_and_receive_heartbeat(): Sends and receives heartbeat messages.
+    - receive_messages(): Receives messages from the network.
+    - check_heartbeats(): Checks the heartbeats of the hosts in the network.
+    """
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.replication_network = []  # List of hosts in the network
@@ -10,6 +37,68 @@ class Network:
         self.leader = None  # The leader host
         threading.Thread(target=self.receive_messages).start()
         threading.Thread(target=self.check_heartbeats).start()
+
+    def add_client(self, host):
+        """
+        Adds a client to the network.
+
+        Parameters:
+        - host (str): The client to be added.
+
+        Returns:
+        None
+        """
+        if host not in self.clients_network:
+            self.clients_network.append(host)
+        else:
+            print(f"Client {host} was already added")
+
+    @staticmethod
+    def get_ownip():
+        """
+        Returns the IP address of the current device.
+
+        Returns:
+        str: The IP address of the current device.
+        """
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+        print(f"Hostname: {hostname}")
+        print(f"IP Address: {ip_address}")
+        return ip_address
+
+    @staticmethod
+    def get_network_ip():
+        """
+        Returns the network IP address of the current device.
+
+        Returns:
+        str: The network IP address of the current device.
+        """
+        hostname = socket.gethostname()
+        ip_addresses = socket.gethostbyname_ex(hostname)[-1]
+        ips = [ip for ip in ip_addresses if not ip.startswith('127.') and not ip.startswith('::1')]
+        if ips:
+            return ips[0]
+            return "Keine IP-Adresse gefunden"
+        
+    @staticmethod   
+    def remove_client(self, client):
+        """
+        Removes a client from the network.
+
+        Parameters:
+        - client (str): The client to be removed.
+
+        Returns:
+        None
+        """
+        if client in self.clients_network:
+            self.clients_network.remove(client)
+        else:
+            print(f"Host {client} was already removed")
+
+
 
     def receive_messages(self):
         while True:
@@ -26,8 +115,9 @@ class Network:
 
             except socket.timeout:
                 continue
-
+   
     def check_heartbeats(self):
+        
         while True:
             time.sleep(1)  # Check heartbeats every second
             for host in list(self.last_heartbeat.keys()):
