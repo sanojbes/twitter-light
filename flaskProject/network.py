@@ -170,8 +170,7 @@ if __name__ == "__main__":
     #Send multicast (Heartbeat)
     heartbeat_message = {
         "id": str(uuid.uuid4()),
-        "sender": Network.get_ownip(),
-        "timestamp": Network.get_time(),
+        "sender": server.get_ownip(),
         }
 
     heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"

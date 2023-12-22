@@ -42,8 +42,9 @@ class MulticastClient:
                 # If the first part of the message is 'HB', update the last heartbeat timestamp
                 if message_parts[0] == 'HB':
                     network.add_host(host)
-                    print('host hinzugefügt' + str(host))
                     network.last_heartbeat[host] = time.time()
+                    network.capture_heartbeat()
+
 
             except socket.timeout:
                 continue
