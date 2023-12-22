@@ -167,6 +167,14 @@ if __name__ == "__main__":
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
     multicastclient.send_message('heartbeat')
+    heartbeat_message = {
+        "id": str(uuid.uuid4()),
+        "sender": server.get_ownip(),
+        }
+
+    heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
+
+    multicastclient.send_message(heartbeat_msg)
     #Listen to Multicast (Heartbeat)
     multicastclient.start()
     #Check First Host

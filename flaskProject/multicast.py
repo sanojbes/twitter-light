@@ -35,6 +35,19 @@ class MulticastClient:
             try:
                 data, addr = self.sock.recvfrom(1024)
                 print(f'Received message: {data.decode("utf-8")} from {addr}')
+                data, host = self.sock.recvfrom(1024)
+                print(f'Received message: {data.decode("utf-8")} from {host}')
+
+                # Split the message into an array
+                message_parts = data.decode("utf-8").split(':')
+
+                # If the first part of the message is 'HB', update the last heartbeat timestamp
+                if message_parts[0] == 'HB':
+                    network.add_host(host)
+                    network.last_heartbeat[host] = time.time()
+                    network.capture_heartbeat()
+
+
             except socket.timeout:
                 continue
 
