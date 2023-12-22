@@ -45,14 +45,18 @@ class MulticastClient:
                     network.add_host(message_parts[2])
                     network.last_heartbeat[host] = time.time()
 
+
                     if not check_thread_started:
                         check_thread = threading.Thread(target=network.check_heartbeats)
                         check_thread.daemon = True  # Setze den Thread als Daemon, um ihn zu beenden, wenn das Hauptprogramm endet
+                        time.sleep(3) # warten bis hb
+                        # set leader if given by hb
+                        if network.leader is None:
+                            if message_parts[3] is not None:
+                                network.leader = message_parts[3]
+                        #start check heartbeat
                         check_thread.start()
                         check_thread_started = True
-
-
-
 
             except socket.timeout:
                 continue

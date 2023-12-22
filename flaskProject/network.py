@@ -128,6 +128,7 @@ class Network:
         
         while True:
             time.sleep(1)  # Check heartbeats every second
+            print(self.leader)
             for host in list(self.last_heartbeat.keys()):
                 if time.time() - self.last_heartbeat[host] > 3:  # No heartbeat within the last 3 seconds
                     self.remove_host(host)
@@ -171,8 +172,9 @@ if __name__ == "__main__":
     heartbeat_message = {
         "id": str(uuid.uuid4()),
         "sender": server.get_network_ip(),
+        "leader": server.leader,
         }
-    heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
+    heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}"
 
     multicastclient.send_message(heartbeat_msg)
     #Listen to Multicast (Heartbeat)
