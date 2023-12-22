@@ -30,7 +30,7 @@ class MulticastClient:
             self.sock.sendto(message.encode('utf-8'), self.server_address)
             time.sleep(3)
 
-    def receive_messages(self):
+    def receive_messages(self, network):
         while True:
             try:
                 data, addr = self.sock.recvfrom(1024)
@@ -51,8 +51,8 @@ class MulticastClient:
             except socket.timeout:
                 continue
 
-    def start(self):
-        thread = threading.Thread(target=self.receive_messages)
+    def start(self, network):
+        thread = threading.Thread(target=self.receive_messages, args=(network,))
         thread.start()
 
 if __name__ == "__main__":

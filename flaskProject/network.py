@@ -1,6 +1,8 @@
 import threading
 import time
 import socket
+import uuid
+
 import multicast
 
 class Network:
@@ -176,7 +178,7 @@ if __name__ == "__main__":
 
     multicastclient.send_message(heartbeat_msg)
     #Listen to Multicast (Heartbeat)
-    multicastclient.start()
+    multicastclient.start(server)
     #Check First Host
     server.check_first_host()
     #Check Heartbeat
