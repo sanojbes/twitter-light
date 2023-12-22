@@ -168,12 +168,10 @@ if __name__ == "__main__":
     server = Network()
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
-    multicastclient.send_message('heartbeat')
     heartbeat_message = {
         "id": str(uuid.uuid4()),
-        "sender": server.get_ownip(),
+        "sender": server.get_network_ip(),
         }
-
     heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
 
     multicastclient.send_message(heartbeat_msg)
@@ -181,5 +179,6 @@ if __name__ == "__main__":
     multicastclient.start(server)
     #Check First Host
     server.check_first_host()
-    #Check Heartbeat
-    server.check_heartbeats()
+    #
+    print(server.replication_network)
+    print(str(server.leader) + " ist leader")

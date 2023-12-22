@@ -2,9 +2,7 @@ import socket
 import struct
 import threading
 import time
-import uuid
 
-from flaskProject.network import Network
 
 class MulticastClient:
     def __init__(self, multicast_group, server_address):
@@ -33,17 +31,17 @@ class MulticastClient:
     def receive_messages(self, network):
         while True:
             try:
-                data, addr = self.sock.recvfrom(1024)
-                print(f'Received message: {data.decode("utf-8")} from {addr}')
+
                 data, host = self.sock.recvfrom(1024)
                 print(f'Received message: {data.decode("utf-8")} from {host}')
 
                 # Split the message into an array
                 message_parts = data.decode("utf-8").split(':')
+                print(message_parts)
 
                 # If the first part of the message is 'HB', update the last heartbeat timestamp
                 if message_parts[0] == 'HB':
-                    network.add_host(host)
+                    network.add_host(message_parts[2])
                     network.last_heartbeat[host] = time.time()
                     network.check_heartbeats()
 
@@ -61,13 +59,5 @@ if __name__ == "__main__":
 
     client = MulticastClient(multicast_group, server_address)
     client.start()
-    heartbeat_message = {
-        "id": str(uuid.uuid4()),
-        "sender": Network.get_ownip(),
-        "timestamp": Network.get_time(),
-        }
-
-    heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
-    client.send_message(heartbeat_msg)
       
         
