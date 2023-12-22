@@ -1,6 +1,8 @@
 import threading
 import time
 import socket
+import uuid
+
 import multicast
 
 class Network:
@@ -166,10 +168,21 @@ if __name__ == "__main__":
     server = Network()
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
-    multicastclient.send_message('heartbeat')
+    heartbeat_message = {
+        "id": str(uuid.uuid4()),
+        "sender": Network.get_ownip(),
+        "timestamp": Network.get_time(),
+        }
+
+    heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
+
+    multicastclient.send_message(heartbeat_msg)
     #Listen to Multicast (Heartbeat)
-    multicastclient.start()
+    multicastclient.start(server)
+    print("Server started")
     #Check First Host
     server.check_first_host()
+    print(server.replication_network)
     #Check Heartbeat
     server.check_heartbeats()
+    print('checked heartbeats')
