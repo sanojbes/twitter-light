@@ -140,9 +140,10 @@ class Network:
         """
         Elects a new leader host using the Bully Algorithm.
         """
-        if self.replication_network:  # Check if there are any hosts in the network
-            self.leader = max(self.replication_network)  # The host with the highest ID becomes the leader
-            print('Leader elected' + str(self.leader))
+        if self.leader is not None:
+            if self.replication_network:  # Check if there are any hosts in the network
+                self.leader = max(self.replication_network)  # The host with the highest ID becomes the leader
+                print('Leader elected' + str(self.leader))
 
 
     def add_host(self, host):
