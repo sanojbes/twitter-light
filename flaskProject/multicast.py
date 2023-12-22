@@ -52,7 +52,9 @@ class MulticastClient:
                         time.sleep(3) # warten bis hb
                         # set leader if given by hb
                         if network.leader is None:
-                            if message_parts[3] is not None:
+                            print(str(network.leader) + "network leader")
+                            if message_parts[3] != 'None':
+                                print(str(message_parts[3]) + " message parts 3")
                                 network.leader = message_parts[3]
                         #start check heartbeat
                         check_thread.start()
