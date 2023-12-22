@@ -45,7 +45,7 @@ class MulticastClient:
                 if message_parts[0] == 'HB':
                     network.add_host(host)
                     network.last_heartbeat[host] = time.time()
-                    network.capture_heartbeat()
+                    network.check_heartbeats()
 
 
             except socket.timeout:
