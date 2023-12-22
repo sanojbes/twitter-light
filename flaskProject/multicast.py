@@ -3,7 +3,7 @@ import struct
 import threading
 import time
 
-
+check_thread_started = False
 class MulticastClient:
     def __init__(self, multicast_group, server_address):
         self.server_address = server_address
@@ -29,6 +29,8 @@ class MulticastClient:
             time.sleep(3)
 
     def receive_messages(self, network):
+        global check_thread_started
+
         while True:
             try:
 
@@ -37,13 +39,19 @@ class MulticastClient:
 
                 # Split the message into an array
                 message_parts = data.decode("utf-8").split(':')
-                print(message_parts)
 
                 # If the first part of the message is 'HB', update the last heartbeat timestamp
                 if message_parts[0] == 'HB':
                     network.add_host(message_parts[2])
                     network.last_heartbeat[host] = time.time()
-                    network.check_heartbeats()
+
+                    if not check_thread_started:
+                        check_thread = threading.Thread(target=network.check_heartbeats)
+                        check_thread.daemon = True  # Setze den Thread als Daemon, um ihn zu beenden, wenn das Hauptprogramm endet
+                        check_thread.start()
+                        check_thread_started = True
+
+
 
 
             except socket.timeout:
