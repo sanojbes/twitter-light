@@ -116,6 +116,7 @@ class Network:
                 # If the first part of the message is 'HB', update the last heartbeat timestamp
                 if message_parts[0] == 'HB':
                     self.add_host(host)
+                    print('host hinzugefügt' + str(host))
                     self.last_heartbeat[host] = time.time()
 
             except socket.timeout:
@@ -138,6 +139,8 @@ class Network:
         """
         if self.replication_network:  # Check if there are any hosts in the network
             self.leader = max(self.replication_network)  # The host with the highest ID becomes the leader
+            print('Leader elected' + str(self.leader))
+
 
     def add_host(self, host):
         """
@@ -161,7 +164,7 @@ class Network:
 if __name__ == "__main__":
     #Instanz Network + Multicast
     server = Network()
-    multicastclient = multicast.MulticastClient('224.0.0.100', 10000)
+    multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
     multicastclient.send_message('heartbeat')
     #Listen to Multicast (Heartbeat)
