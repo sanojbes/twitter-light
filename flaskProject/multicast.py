@@ -30,26 +30,16 @@ class MulticastClient:
             self.sock.sendto(message.encode('utf-8'), self.server_address)
             time.sleep(3)
 
-    def receive_messages(self,network):
+    def receive_messages(self):
         while True:
             try:
-                data, host = self.sock.recvfrom(1024)
-                print(f'Received message: {data.decode("utf-8")} from {host}')
-
-                # Split the message into an array
-                message_parts = data.decode("utf-8").split(':')
-
-                # If the first part of the message is 'HB', update the last heartbeat timestamp
-                if message_parts[0] == 'HB':
-                    network.add_host(host)
-                    print('host hinzugefügt' + str(host))
-                    network.last_heartbeat[host] = time.time()
-
+                data, addr = self.sock.recvfrom(1024)
+                print(f'Received message: {data.decode("utf-8")} from {addr}')
             except socket.timeout:
                 continue
 
-    def start(self, network):
-        thread = threading.Thread(target=self.receive_messages, args=(network,))
+    def start(self):
+        thread = threading.Thread(target=self.receive_messages)
         thread.start()
 
 if __name__ == "__main__":
