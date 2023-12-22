@@ -83,8 +83,8 @@ class Network:
         ips = [ip for ip in ip_addresses if not ip.startswith('127.') and not ip.startswith('::1')]
         if ips:
             return ips[0]
+        else:
             return "Keine IP-Adresse gefunden"
-        
     @staticmethod   
     def remove_client(self, client):
         """
@@ -128,7 +128,6 @@ class Network:
         
         while True:
             time.sleep(1)  # Check heartbeats every second
-            print(self.leader)
             for host in list(self.last_heartbeat.keys()):
                 if time.time() - self.last_heartbeat[host] > 3:  # No heartbeat within the last 3 seconds
                     self.remove_host(host)
@@ -140,10 +139,9 @@ class Network:
         """
         Elects a new leader host using the Bully Algorithm.
         """
-        if self.leader is not None:
-            if self.replication_network:  # Check if there are any hosts in the network
-                self.leader = max(self.replication_network)  # The host with the highest ID becomes the leader
-                print('Leader elected' + str(self.leader))
+        if self.replication_network:  # Check if there are any hosts in the network
+            self.leader = max(self.replication_network)  # The host with the highest ID becomes the leader
+            print('Leader elected' + str(self.leader))
 
 
     def add_host(self, host):
@@ -182,6 +180,6 @@ if __name__ == "__main__":
     multicastclient.start(server)
     #Check First Host
     server.check_first_host()
+    print(str(server.leader) + " ist leader")
     #
     print(server.replication_network)
-    print(str(server.leader) + " ist leader")
