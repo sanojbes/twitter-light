@@ -2,6 +2,9 @@ import socket
 import struct
 import threading
 import time
+import uuid
+
+from flaskProject.network import Network
 
 class MulticastClient:
     def __init__(self, multicast_group, server_address):
@@ -45,6 +48,13 @@ if __name__ == "__main__":
 
     client = MulticastClient(multicast_group, server_address)
     client.start()
-    print(f'Send message: {client.send_message("Hi wie gehts? von Jonas")}')
+    heartbeat_message = {
+        "id": str(uuid.uuid4()),
+        "sender": Network.get_ownip(),
+        "timestamp": Network.get_time(),
+        }
+
+    heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}"
+    client.send_message(heartbeat_msg)
       
         
