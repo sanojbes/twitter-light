@@ -180,16 +180,17 @@ class Network:
             users_json = json.load(file)
         users_string = json.dumps(users_json)
 
+        print(users_string)
         return users_string
 
 
 
     def update_Json(self):
         users_string = self.create_update_message()
-
+        print(self.replication_network)
         for server in self.replication_network:
-            response = requests.post(f'http://{server}/update-users', data=users_string)
-            print(users_string)
+            print(server)
+            requests.post(f'http://{server}/update-users', data=users_string)
 
 
 if __name__ == "__main__":

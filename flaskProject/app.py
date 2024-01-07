@@ -9,8 +9,7 @@ from multicast import *
 
 
 app = Flask(__name__)
-global network_instance
-network_instance = Network()
+server = Network()
 
 @app.route('/', methods=['GET'])
 def home():
@@ -32,7 +31,7 @@ def start():
     posts = get_all_posts()
     print(posts)
 
-    network_instance.update_Json()
+    server.update_Json()
     print('Updated Json')
 
     return render_template('index.html', posts = posts)
@@ -49,7 +48,8 @@ def updateComments(post_id):
         new_comment.safe_comment_in_Json_file("users.json",post_id)
     posts = get_all_posts()
 
-    network_instance.update_Json()
+    print('Hallo')
+    server.update_Json()
     print('Updated Json')
 
     return render_template('index.html', posts = posts)
@@ -63,8 +63,6 @@ def update_users():
     return '', 200
 
 def heartbeat():
-    #Instanz Network + Multicast
-    server = Network()
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
     multicastclient.send_message(server)
@@ -72,14 +70,13 @@ def heartbeat():
     multicastclient.start(server)
     #Check First Host
     server.check_first_host()
-    print(str(server.leader) + " ist leader")
-    #
-    print(server.replication_network)
+    #print(str(server.leader) + " ist leader")
+    #print(server.replication_network)
 
 
 if __name__ == '__main__':
     # Start der Flask-App in einem Thread
-    flask_thread = threading.Thread(target=app.run, kwargs={'host': network_instance.get_ownip(), 'port': 5000})
+    flask_thread = threading.Thread(target=app.run, kwargs={'host': server.get_ownip(), 'port': 5000})
     flask_thread.start()
 
     # Ausführung des zusätzlichen Codes in einem anderen Thread

@@ -1,7 +1,7 @@
 import json
 
 def get_all_posts():
-    f = open('users.json')
+    f = open("users.json")
     posts = json.load(f)
 
     f.close()
