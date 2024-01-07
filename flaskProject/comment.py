@@ -32,6 +32,5 @@ class Comment:
         with open(filepath, 'w') as json_file:
             json.dump(all_posts, json_file, indent=4)
         print(all_posts)
-        #send Json to other backends
 
 

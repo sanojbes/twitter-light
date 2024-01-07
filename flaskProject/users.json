@@ -18,6 +18,16 @@
                 "comment_id": 3,
                 "comment_content": "demo",
                 "comment_created_at": "17.12.2023  10:40:25"
+            },
+            {
+                "comment_id": 4,
+                "comment_content": "test wird funktionieren",
+                "comment_created_at": "7.1.2024  14:08:29"
+            },
+            {
+                "comment_id": 5,
+                "comment_content": "diesmal wirklich",
+                "comment_created_at": "7.1.2024  14:09:28"
             }
         ]
     },

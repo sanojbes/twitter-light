@@ -32,6 +32,9 @@ def start():
     posts = get_all_posts()
     print(posts)
 
+    network_instance.update_Json()
+    print('Updated Json')
+
     return render_template('index.html', posts = posts)
 
 @app.route('/comments/<post_id>', methods=['GET','POST'])
@@ -45,6 +48,10 @@ def updateComments(post_id):
         )
         new_comment.safe_comment_in_Json_file("users.json",post_id)
     posts = get_all_posts()
+
+    network_instance.update_Json()
+    print('Updated Json')
+
     return render_template('index.html', posts = posts)
 
 @app.route('/update-users', methods=['POST'])
