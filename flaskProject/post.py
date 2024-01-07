@@ -31,3 +31,4 @@ class Post:
         with open(file_path, 'w') as json_file:
             json.dump(existing_posts, json_file, indent=4)
             print(f"Data added to file: {file_path}")
+        #send JSOn to other backends

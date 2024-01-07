@@ -2,8 +2,11 @@ import threading
 import time
 import socket
 import uuid
-
+import json
 import multicast
+import requests
+
+
 
 class Network:
     """
@@ -134,7 +137,6 @@ class Network:
 
 
     def check_heartbeats(self):
-        
         while True:
             time.sleep(1)  # Check heartbeats every second
             for host in list(self.last_heartbeat.keys()):
@@ -175,20 +177,35 @@ class Network:
     def create_message(self):
         heartbeat_message = {
             "id": str(uuid.uuid4()),
-            "sender": server.get_network_ip(),
-            "leader": server.leader,
-            "timestamp": time.time(),  # Add a timestamp
+            "sender": self.get_network_ip(),
+            "leader": self.leader,
         }
         heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}:{heartbeat_message['timestamp']}"
 
         return heartbeat_msg
+
+    def create_update_message(self):
+        with open('users.json', 'r') as file:
+            users_json = json.load(file)
+        users_string = json.dumps(users_json)
+
+        return users_string
+
+
+
+    def update_Json(self):
+        users_string = self.create_update_message()
+
+        for server in self.replication_network:
+            response = requests.post(f'http://{server}/update-users', data=users_string)
+            print(users_string)
+
 
 if __name__ == "__main__":
     #Instanz Network + Multicast
     server = Network()
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
-
     multicastclient.send_message(server)
     #Listen to Multicast (Heartbeat)
     multicastclient.start(server)
