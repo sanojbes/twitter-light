@@ -180,7 +180,7 @@ class Network:
             "sender": self.get_network_ip(),
             "leader": self.leader,
         }
-        heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}:{heartbeat_message['timestamp']}"
+        heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}"
 
         return heartbeat_msg
 
