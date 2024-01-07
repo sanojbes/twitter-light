@@ -29,6 +29,11 @@ class MulticastClient:
             self.sock.sendto(message.encode('utf-8'), self.server_address)
             time.sleep(3)
 
+    def send_update_Json(self, network):
+        message = network.create_update_message()
+        self.sock.sendto(message.encode('utf-8'), self.server_address)
+        time.sleep(3)
+
     def receive_messages(self, network):
         global check_thread_started
 
@@ -46,16 +51,17 @@ class MulticastClient:
                     network.add_host(message_parts[2])
                     network.last_heartbeat[host] = time.time()
 
+                    # set leader if given by hb
+                    if network.leader is None:
+                        print(str(network.leader) + " network leader")
+                        if message_parts[3] != 'None':
+                            print(str(message_parts[3]) + " message parts 3")
+                            network.leader = message_parts[3]
+
                     if not check_thread_started:
                         check_thread = threading.Thread(target=network.check_heartbeats)
                         check_thread.daemon = True  # Setze den Thread als Daemon, um ihn zu beenden, wenn das Hauptprogramm endet
                         time.sleep(3) # warten bis hb
-                        # set leader if given by hb
-                        if network.leader is None:
-                            print(str(network.leader) + " network leader")
-                            if message_parts[3] != 'None':
-                                print(str(message_parts[3]) + " message parts 3")
-                                network.leader = message_parts[3]
                         #start check heartbeat
                         check_thread.start()
                         check_thread_started = True

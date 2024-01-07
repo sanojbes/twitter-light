@@ -125,7 +125,6 @@ class Network:
                 continue
    
     def check_heartbeats(self):
-        
         while True:
             time.sleep(1)  # Check heartbeats every second
             for host in list(self.last_heartbeat.keys()):
@@ -166,19 +165,28 @@ class Network:
     def create_message(self):
         heartbeat_message = {
             "id": str(uuid.uuid4()),
-            "sender": server.get_network_ip(),
-            "leader": server.leader,
+            "sender": self.get_network_ip(),
+            "leader": self.leader,
         }
         heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}"
 
         return heartbeat_msg
+
+    def create_update_message(self):
+        update_message = users.json
+        return update_message
+
+
+
+    def update_Json_multicast(self, message, multicastclient):
+        multicastclient.send_update_Json(self)
+
 
 if __name__ == "__main__":
     #Instanz Network + Multicast
     server = Network()
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
-
     multicastclient.send_message(server)
     #Listen to Multicast (Heartbeat)
     multicastclient.start(server)
