@@ -118,15 +118,24 @@ class Network:
                 # Split the message into an array
                 message_parts = data.decode("utf-8").split(':')
 
-                # If the first part of the message is 'HB', update the last heartbeat timestamp
-                if message_parts[0] == 'HB':
-                    self.add_host(host)
-                    print('host hinzugefügt' + str(host))
-                    self.last_heartbeat[host] = time.time()
+                 # Load the current data
+                with open('User.json', 'r') as f:
+                    current_data = json.load(f)
+
+                # If the incoming message is newer, update the data
+                if float(message_parts[4]) > current_data['timestamp']:
+                    with open('User.json', 'w') as f:
+                        json.dump({
+                            'id': message_parts[1],
+                            'sender': message_parts[2],
+                            'leader': message_parts[3],
+                            'timestamp': float(message_parts[4])
+                        }, f)
 
             except socket.timeout:
                 continue
-   
+
+
     def check_heartbeats(self):
         while True:
             time.sleep(1)  # Check heartbeats every second
@@ -171,7 +180,7 @@ class Network:
             "sender": self.get_network_ip(),
             "leader": self.leader,
         }
-        heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}"
+        heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}:{heartbeat_message['timestamp']}"
 
         return heartbeat_msg
 
