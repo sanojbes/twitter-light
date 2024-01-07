@@ -52,6 +52,12 @@
         "post_id": 3,
         "post_content": "Ich bin Alfred und bin auch dabei!",
         "post_created_at": "23.11.2023  20:19",
-        "post_comments": []
+        "post_comments": [
+            {
+                "comment_id": 1,
+                "comment_content": "test",
+                "comment_created_at": "7.1.2024  13:53:08"
+            }
+        ]
     }
 ]

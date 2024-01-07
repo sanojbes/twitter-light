@@ -5,6 +5,7 @@ from post import Post
 from functions import get_all_posts,get_max_id, get_all_comments, get_max_comment_id
 from comment import Comment
 from network import *
+from multicast import *
 
 
 app = Flask(__name__)
@@ -46,10 +47,40 @@ def updateComments(post_id):
     posts = get_all_posts()
     return render_template('index.html', posts = posts)
 
+@app.route('/update-users', methods=['POST'])
+def update_users():
+    users_string = request.data
+    users_json = json.loads(users_string)
+    with open('users.json', 'w') as file:
+        json.dump(users_json, file)
+    return '', 200
+
+def heartbeat():
+    #Instanz Network + Multicast
+    server = Network()
+    multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
+    #Send multicast (Heartbeat)
+    multicastclient.send_message(server)
+    #Listen to Multicast (Heartbeat)
+    multicastclient.start(server)
+    #Check First Host
+    server.check_first_host()
+    print(str(server.leader) + " ist leader")
+    #
+    print(server.replication_network)
+
+
 if __name__ == '__main__':
-    #start heartbeart + listen
-    network_instance.start_listening()
-    network_instance.start_sending_heartbeat()
-    app.run(host='192.168.178.203', port=5000, debug=True, threaded=True)
+    # Start der Flask-App in einem Thread
+    flask_thread = threading.Thread(target=app.run, kwargs={'host': network_instance.get_ownip(), 'port': 5000})
+    flask_thread.start()
+
+    # Ausführung des zusätzlichen Codes in einem anderen Thread
+    additional_thread = threading.Thread(target=heartbeat())
+    additional_thread.start()
+
+    # Warte, bis die Flask-App beendet wird
+    flask_thread.join()
+
 
 

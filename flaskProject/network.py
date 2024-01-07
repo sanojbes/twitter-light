@@ -2,8 +2,11 @@ import threading
 import time
 import socket
 import uuid
-
+import json
 import multicast
+import requests
+
+
 
 class Network:
     """
@@ -173,13 +176,19 @@ class Network:
         return heartbeat_msg
 
     def create_update_message(self):
-        update_message = users.json
-        return update_message
+        with open('users.json', 'r') as file:
+            users_json = json.load(file)
+        users_string = json.dumps(users_json)
+
+        return users_string
 
 
 
-    def update_Json_multicast(self, message, multicastclient):
-        multicastclient.send_update_Json(self)
+    def update_Json(self, message):
+        users_string = create_update_message()
+
+        for server in self.replication_network:
+            response = requests.post(f'http://{server}/update-users', data=users_string)
 
 
 if __name__ == "__main__":

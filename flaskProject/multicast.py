@@ -29,11 +29,6 @@ class MulticastClient:
             self.sock.sendto(message.encode('utf-8'), self.server_address)
             time.sleep(3)
 
-    def send_update_Json(self, network):
-        message = network.create_update_message()
-        self.sock.sendto(message.encode('utf-8'), self.server_address)
-        time.sleep(3)
-
     def receive_messages(self, network):
         global check_thread_started
 
