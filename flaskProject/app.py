@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect
 import json
 from post import Post
 from functions import get_all_posts,get_max_id, get_all_comments, get_max_comment_id
@@ -29,10 +29,8 @@ def start():
         )
         new_post.safe_in_Jsonfile("users.json")
     posts = get_all_posts()
-    print(posts)
 
     server.update_Json()
-    print('Updated Json')
 
     return render_template('index.html', posts = posts)
 
@@ -48,9 +46,7 @@ def updateComments(post_id):
         new_comment.safe_comment_in_Json_file("users.json",post_id)
     posts = get_all_posts()
 
-    print('Hallo')
     server.update_Json()
-    print('Updated Json')
 
     return render_template('index.html', posts = posts)
 
@@ -61,6 +57,16 @@ def update_users():
     with open('users.json', 'w') as file:
         json.dump(users_json, file)
     return '', 200
+
+
+@app.route('/redirect')
+def redirect_to_new_ip():
+    # Specify the new IP address and the endpoint to redirect to
+    new_ip_address = server.leader  # Replace this with the desired IP
+    new_endpoint = ':5000'  # Replace this with the desired endpoint
+
+    # Redirect the client to the new IP address and endpoint
+    return redirect(f'http://{new_ip_address}{new_endpoint}', code=302)
 
 def heartbeat():
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
@@ -75,13 +81,13 @@ def heartbeat():
 
 
 if __name__ == '__main__':
-    # Start der Flask-App in einem Thread
-    flask_thread = threading.Thread(target=app.run, kwargs={'host': server.get_ownip(), 'port': 5000})
-    flask_thread.start()
-
     # Ausführung des zusätzlichen Codes in einem anderen Thread
     additional_thread = threading.Thread(target=heartbeat())
     additional_thread.start()
+
+    # Start der Flask-App in einem Thread
+    flask_thread = threading.Thread(target=app.run, kwargs={'host': server.leader, 'port': 5000})
+    flask_thread.start()
 
     # Warte, bis die Flask-App beendet wird
     flask_thread.join()

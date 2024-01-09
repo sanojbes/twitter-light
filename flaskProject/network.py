@@ -41,7 +41,6 @@ class Network:
         self.replication_network = []  # List of hosts in the network
         self.last_heartbeat = {}  # Stores the last heartbeat timestamp from each host
         self.leader = None  # The leader host
-        threading.Thread(target=self.receive_messages).start()
         threading.Thread(target=self.check_heartbeats).start()
 
     def add_client(self, host):
