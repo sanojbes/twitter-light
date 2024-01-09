@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Flask, jsonify, request, render_template, redirect
+from flask_cors import CORS
 import json
 from post import Post
 from functions import get_all_posts,get_max_id, get_all_comments, get_max_comment_id
@@ -9,6 +10,7 @@ from multicast import *
 
 
 app = Flask(__name__)
+CORS(app)
 server = Network()
 
 @app.route('/', methods=['GET'])

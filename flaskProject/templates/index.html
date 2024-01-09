@@ -54,8 +54,7 @@
         let availableServerFound = false;
 
         for (let server of serverList) {
-            console.log('STARTED');
-            console.log(server);
+            console.log(server.ip);
             fetch(`http://${server.ip}:5000/get_new_leader_info`)
                 .then(response => {
                     if (response.ok) {
