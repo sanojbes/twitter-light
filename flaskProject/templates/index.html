@@ -44,8 +44,8 @@
         let availableServerFound = false;
 
         for (let server of serverList) {
-            console.log(${server.ip})
-            fetch(`http://${server.ip}/get_new_leader_info`)
+            console.log(server);
+            fetch(`http://${server.ip}:5000/get_new_leader_info`)
                 .then(response => {
                     if (response.ok) {
                         availableServerFound = true;
