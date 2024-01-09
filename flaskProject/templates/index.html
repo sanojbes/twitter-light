@@ -24,12 +24,20 @@
     // Get the list of available servers
     function getallservers(){
         fetch('/all_servers_available')
+        .then(response => {
+        if (response.status === 503) {
+            console.error('Service Unavailable');
+            checkServers()
+        } else {
+            return response.json();
+        }
+        })
         .then(response => response.json())
         .then(servers => {
             // Store the servers in the global variable
             serverList = servers;
         })
-        .catch(error => checkServers());
+        .catch(error => console.error('Error:', error));
     }
 
     // Function to check each server until an available one is found

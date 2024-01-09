@@ -69,11 +69,12 @@ def get_all_servers_available():
     servers_available = []
 
     for index, s in enumerate(server.replication_network):
-        entry = {
-            'id': index,
-            'ip': s
-        }
-        servers_available.append(entry)
+        if s != server.leader:
+            entry = {
+                'id': index,
+                'ip': s
+            }
+            servers_available.append(entry)
     servers_available_json = json.dumps(servers_available, indent=4)
     print(servers_available_json)
     return servers_available_json  #Gibt servers_available als JSON
