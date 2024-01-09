@@ -28,9 +28,8 @@
         .then(servers => {
             // Store the servers in the global variable
             serverList = servers;
-            checkServers()
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => checkServers());
     }
 
     // Function to check each server until an available one is found
