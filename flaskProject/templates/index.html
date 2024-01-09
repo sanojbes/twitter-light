@@ -37,7 +37,10 @@
                     serverList = servers;
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                    console.error('Error:', error);
+                    checkServers();
+                });
     }
 
     // Function to check each server until an available one is found
@@ -51,6 +54,7 @@
         let availableServerFound = false;
 
         for (let server of serverList) {
+            console.log('STARTED');
             console.log(server);
             fetch(`http://${server.ip}:5000/get_new_leader_info`)
                 .then(response => {
