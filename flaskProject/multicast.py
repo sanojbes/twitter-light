@@ -36,7 +36,7 @@ class MulticastClient:
             try:
 
                 data, host = self.sock.recvfrom(1024)
-                print(f'Received message: {data.decode("utf-8")} from {host}')
+                #print(f'Received message: {data.decode("utf-8")} from {host}')
 
                 # Split the message into an array
                 message_parts = data.decode("utf-8").split(':')
@@ -45,21 +45,22 @@ class MulticastClient:
                 if message_parts[0] == 'HB':
                     network.add_host(message_parts[2])
                     network.last_heartbeat[host] = time.time()
-
+                    print('leader ist ' + str(network.leader))
                     # set leader if given by hb
                     if network.leader is None:
                         print(str(network.leader) + " network leader")
                         if message_parts[3] != 'None':
-                            print(str(message_parts[3]) + " message parts 3")
+                            print(str(message_parts[3]) + " is leader")
                             network.leader = message_parts[3]
+                    network.check_heartbeats()
 
-                    if not check_thread_started:
-                        check_thread = threading.Thread(target=network.check_heartbeats)
-                        check_thread.daemon = True  # Setze den Thread als Daemon, um ihn zu beenden, wenn das Hauptprogramm endet
-                        time.sleep(3) # warten bis hb
+                    #if not check_thread_started:
+                        #check_thread = threading.Thread(target=network.check_heartbeats)
+                        #check_thread.daemon = True  # Setze den Thread als Daemon, um ihn zu beenden, wenn das Hauptprogramm endet
+                        #time.sleep(3) # warten bis hb
                         #start check heartbeat
-                        check_thread.start()
-                        check_thread_started = True
+                        #check_thread.start()
+                        #check_thread_started = True
 
             except socket.timeout:
                 continue

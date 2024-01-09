@@ -56,8 +56,8 @@ class Network:
         """
         if host not in self.clients_network:
             self.clients_network.append(host)
-        else:
-            print(f"Client {host} was already added")
+        #else:
+            #print(f"Client {host} was already added")
 
     @staticmethod
     def get_ownip():
@@ -108,12 +108,13 @@ class Network:
         time.sleep(4)
         if self.leader is None:
             self.elect_leader()
+            print('leader is ' + self.leader)
 
     def receive_messages(self):
         while True:
             try:
                 data, host = self.sock.recvfrom(1024)
-                print(f'Received message: {data.decode("utf-8")} from {host}')
+                #print(f'Received message: {data.decode("utf-8")} from {host}')
 
                 # Split the message into an array
                 message_parts = data.decode("utf-8").split(':')
@@ -138,9 +139,9 @@ class Network:
 
     def check_heartbeats(self):
         while True:
-            time.sleep(1)  # Check heartbeats every second
+            print(self.last_heartbeat)
             for host in list(self.last_heartbeat.keys()):
-                if time.time() - self.last_heartbeat[host] > 3:  # No heartbeat within the last 3 seconds
+                if time.time() - self.last_heartbeat[host] > 5:  # No heartbeat within the last 3 seconds
                     self.remove_host(host)
                     del self.last_heartbeat[host]
                     if host == self.leader:  # If the leader is not sending a heartbeat
@@ -162,8 +163,8 @@ class Network:
         if host not in self.replication_network:
             self.replication_network.append(host)
 
-        else:
-            print(f"Host {host} was already discovered")
+        #else:
+            #print(f"Host {host} was already discovered")
 
     def remove_host(self, host):
         """
@@ -212,6 +213,6 @@ if __name__ == "__main__":
     multicastclient.start(server)
     #Check First Host
     server.check_first_host()
-    print(str(server.leader) + " ist leader")
+    #print(str(server.leader) + " ist leader")
     #
-    print(server.replication_network)
+    #print(server.replication_network)
