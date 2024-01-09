@@ -199,7 +199,7 @@ class Network:
         print(self.replication_network)
         for server in self.replication_network:
             print(server)
-            requests.post(f'http://{server}/update-users', data=users_string)
+            requests.post(f'http://{server}:5000/update-users', data=users_string)
 
 
 if __name__ == "__main__":
