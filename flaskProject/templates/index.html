@@ -17,6 +17,60 @@
         }
 
     </style>
+    <script>
+    // Declare serverList as a global variable accessible in the entire script
+    let serverList;
+
+    // Get the list of available servers
+    fetch('/all_servers_available')
+        .then(response => response.json())
+        .then(servers => {
+            // Store the servers in the global variable
+            serverList = servers;
+
+            // Start checking the servers every 2 seconds
+            setInterval(checkServers, 2000);
+        })
+        .catch(error => console.error('Error:', error));
+
+    // Function to check each server until an available one is found
+    function checkServers() {
+        // Check if serverList is undefined or empty
+        if (!serverList || serverList.length === 0) {
+            console.error('Server list is empty or undefined');
+            return;
+        }
+
+        let availableServerFound = false;
+
+        for (let server of serverList) {
+            fetch(`http://${server.ip}/get_new_leader`)
+                .then(response => {
+                    if (response.ok) {
+                        availableServerFound = true;
+                        return response.text();
+                    } else {
+                        throw new Error('Server not available');
+                    }
+                })
+                .then(newLeader => {
+                    if (availableServerFound) {
+                        // Redirect to the new leader only if an available server is found
+                        window.location.href = `http://${newLeader}:5000`;
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error with server ${server.ip}:`, error);
+                    // If the server is not available, move to the next one
+                });
+
+            if (availableServerFound) {
+                // Stop checking if an available server is found
+                break;
+            }
+        }
+    }
+    </script>
 
 </head>
 <body>

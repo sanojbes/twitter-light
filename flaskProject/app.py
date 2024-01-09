@@ -59,15 +59,23 @@ def update_users():
     return '', 200
 
 
-@app.route('/redirect')
-def redirect_to_new_ip():
-    # Specify the new IP address and the endpoint to redirect to
-    new_ip_address = server.leader  # Replace this with the desired IP
-    new_endpoint = ':5000'  # Replace this with the desired endpoint
+@app.route('/get_new_leader_info', methods=['GET'])
+def get_new_leader_info():
+    return server.leader, 200
 
-    # Redirect the client to the new IP address and endpoint
-    return redirect(f'http://{new_ip_address}{new_endpoint}', code=302)
+@app.route('/all_servers_available', methods=['GET'])
+def get_all_servers_available():
+    servers_available = []
 
+    for index, s in enumerate(server.replication_network):
+        entry = {
+            'id': index,
+            'ip': s
+        }
+        servers_available.append(entry)
+    servers_available_json = json.dumps(servers_available, indent=4)
+
+    return servers_available_json  #Gibt servers_available als JSON
 def heartbeat():
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
@@ -86,7 +94,7 @@ if __name__ == '__main__':
     additional_thread.start()
 
     # Start der Flask-App in einem Thread
-    flask_thread = threading.Thread(target=app.run, kwargs={'host': server.leader, 'port': 5000})
+    flask_thread = threading.Thread(target=app.run, kwargs={'host': server.get_ownip(), 'port': 5000})
     flask_thread.start()
 
     # Warte, bis die Flask-App beendet wird
