@@ -22,7 +22,7 @@
     let serverList;
     setInterval(getallservers, 2000);
     // Get the list of available servers
-    function getAvailableServers() {
+    function getallservers() {
         fetch('/all_servers_available')
             .then(response => {
                 if (response.status === 503) {
