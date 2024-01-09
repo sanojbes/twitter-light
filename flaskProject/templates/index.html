@@ -20,18 +20,18 @@
     <script>
     // Declare serverList as a global variable accessible in the entire script
     let serverList;
-
+    setInterval(getallservers, 2000);
     // Get the list of available servers
-    fetch('/all_servers_available')
+    function getallservers(){
+        fetch('/all_servers_available')
         .then(response => response.json())
         .then(servers => {
             // Store the servers in the global variable
             serverList = servers;
-
-            // Start checking the servers every 2 seconds
-            setInterval(checkServers, 2000);
+            checkServers()
         })
         .catch(error => console.error('Error:', error));
+    }
 
     // Function to check each server until an available one is found
     function checkServers() {
@@ -44,7 +44,8 @@
         let availableServerFound = false;
 
         for (let server of serverList) {
-            fetch(`http://${server.ip}/get_new_leader`)
+            console.log(${server.ip})
+            fetch(`http://${server.ip}/get_new_leader_info`)
                 .then(response => {
                     if (response.ok) {
                         availableServerFound = true;

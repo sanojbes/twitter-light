@@ -61,6 +61,7 @@ def update_users():
 
 @app.route('/get_new_leader_info', methods=['GET'])
 def get_new_leader_info():
+    print('leader abgefragt')
     return server.leader, 200
 
 @app.route('/all_servers_available', methods=['GET'])
@@ -74,7 +75,7 @@ def get_all_servers_available():
         }
         servers_available.append(entry)
     servers_available_json = json.dumps(servers_available, indent=4)
-
+    print(servers_available_json)
     return servers_available_json  #Gibt servers_available als JSON
 def heartbeat():
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
