@@ -108,44 +108,13 @@ class Network:
         time.sleep(4)
         if self.leader is None:
             self.elect_leader()
-            print('leader is ' + self.leader)
-
-    def receive_messages(self):
-        while True:
-            try:
-                data, host = self.sock.recvfrom(1024)
-                #print(f'Received message: {data.decode("utf-8")} from {host}')
-
-                # Split the message into an array
-                message_parts = data.decode("utf-8").split(':')
-
-                 # Load the current data
-                with open('User.json', 'r') as f:
-                    current_data = json.load(f)
-
-                # If the incoming message is newer, update the data
-                if float(message_parts[4]) > current_data['timestamp']:
-                    with open('User.json', 'w') as f:
-                        json.dump({
-                            'id': message_parts[1],
-                            'sender': message_parts[2],
-                            'leader': message_parts[3],
-                            'timestamp': float(message_parts[4])
-                        }, f)
-
-            except socket.timeout:
-                continue
 
 
     def check_heartbeats(self):
-        while True:
-            print(self.last_heartbeat)
-            for host in list(self.last_heartbeat.keys()):
-                if time.time() - self.last_heartbeat[host] > 5:  # No heartbeat within the last 3 seconds
-                    self.remove_host(host)
-                    del self.last_heartbeat[host]
-                    if host == self.leader:  # If the leader is not sending a heartbeat
-                        self.elect_leader()  # Trigger a leader election
+        for host in list(self.last_heartbeat.keys()):
+            if time.time() - self.last_heartbeat[host] > 5:  # No heartbeat within the last 3 seconds
+                self.remove_host(host)
+                del self.last_heartbeat[host]
 
     def elect_leader(self):
         """
@@ -170,9 +139,9 @@ class Network:
         """
         Removes a host from the network and triggers a leader election if the leader was removed.
         """
-        if host in self.replication_network:
-            self.replication_network.remove(host)
-            if host == self.leader:
+        if host[0] in self.replication_network:
+            self.replication_network.remove(host[0])
+            if host[0] == self.leader:
                 self.elect_leader()
 
     def create_message(self):
