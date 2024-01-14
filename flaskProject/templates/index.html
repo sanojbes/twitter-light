@@ -20,27 +20,32 @@
     <script>
     // Declare serverList as a global variable accessible in the entire script
     let serverList;
-    setInterval(getallservers, 2000);
+    setInterval(getallservers, 3000);
     // Get the list of available servers
-    function getallservers() {
-        fetch('/all_servers_available')
-            .then(response => {
-                if (response.status === 503) {
-                    console.error('Service Unavailable');
-                    checkServers();
-                } else {
-                    return response.json();
-                }
-            })
-            .then(servers => {
+    async function getallservers() {
+        try {
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Request timeout')), 5000)
+            );
+            // Abfrage auf Server dauert länger als 5 Sekunden
+            const response = await Promise.race([
+                fetch('/all_servers_available'),
+                timeoutPromise
+            ]);
+
+            if (response.status === 503) {
+                console.error('Service Unavailable');
+                checkServers();
+            } else {
+                const servers = await response.json();
                 if (servers) {
                     serverList = servers;
                 }
-            })
-            .catch(error => {
-                    console.error('Error:', error);
-                    checkServers();
-                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            checkServers();
+        }
     }
 
     // Function to check each server until an available one is found
