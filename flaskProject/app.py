@@ -98,7 +98,7 @@ if __name__ == '__main__':
     additional_thread.start()
 
     # Start der Flask-App in einem Thread
-    flask_thread = threading.Thread(target=app.run, kwargs={'host': server.get_ownip(), 'port': 5000})
+    flask_thread = threading.Thread(target=app.run, kwargs={'host': server.get_network_ip(), 'port': 5000})
     flask_thread.start()
 
     # Warte, bis die Flask-App beendet wird
