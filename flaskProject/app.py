@@ -81,6 +81,9 @@ def get_all_servers_available():
     print(servers_available_json)
     return servers_available_json  #Gibt servers_available als JSON
 def heartbeat():
+    #Get current JSON
+    server.update_Json()
+    #create Client
     multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
     #Send multicast (Heartbeat)
     multicastclient.send_message(server)

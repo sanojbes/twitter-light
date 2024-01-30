@@ -166,7 +166,5 @@ class Network:
 
     def update_Json(self):
         users_string = self.create_update_message()
-        print(self.replication_network)
         for server in self.replication_network:
-            print(server)
             requests.post(f'http://{server}:5000/update-users', data=users_string)

@@ -1,3 +1,1 @@
-[
-
-]
+[{"post_id": 1, "post_content": "Hallo wilkommen zur Pr\u00e4sentation", "post_created_at": "30.1.2024  16:25:09", "post_comments": [{"comment_id": 1, "comment_content": "Hallo Felix", "comment_created_at": "30.1.2024  16:25:26"}, {"comment_id": 2, "comment_content": "Hallo Flo", "comment_created_at": "30.1.2024  16:25:54"}, {"comment_id": 3, "comment_content": "http://192.168.37.248:5000/", "comment_created_at": "30.1.2024  16:27:48"}]}]
