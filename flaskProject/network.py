@@ -107,6 +107,7 @@ class Network:
         time.sleep(2)
         if self.leader is None:
             self.elect_leader()
+            print('INITIAL LEADER SELECTED: ' + self.leader)
 
 
 
@@ -122,7 +123,7 @@ class Network:
         """
         if self.replication_network:  # Check if there are any hosts in the network
             self.leader = max(self.replication_network)  # The host with the highest ID becomes the leader
-            print('Leader elected' + str(self.leader))
+            print('Leader elected: ' + str(self.leader))
 
 
     def add_host(self, host):
@@ -141,6 +142,7 @@ class Network:
             self.replication_network.remove(host[0])
             if host[0] == self.leader:
                 self.elect_leader()
+                print('ELECT NEW LEADER')
 
     def create_message(self):
         heartbeat_message = {
