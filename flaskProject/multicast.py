@@ -26,7 +26,7 @@ class MulticastClient:
         while True:
             message = network.create_message()
             self.sock.sendto(message.encode('utf-8'), self.server_address)
-            time.sleep(3)
+            time.sleep(1)
 
     def receive_messages(self, network):
         while True:
@@ -42,10 +42,10 @@ class MulticastClient:
                     network.add_host(message_parts[2])
                     network.last_heartbeat[host] = time.time()
                     network.check_heartbeats()
-                    print('leader ist ' + str(network.leader))
                     # set leader if given by hb
                     if message_parts[3] != 'None':
                         network.leader = message_parts[3]
+                        print('LEADER AUS HB: ' + network.leader)
 
 
             except socket.timeout:

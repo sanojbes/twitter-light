@@ -107,7 +107,7 @@ class Network:
         time.sleep(2)
         if self.leader is None:
             self.elect_leader()
-            print('INITIAL LEADER SELECTED: ' + self.leader)
+            print('INITIAL LEADER SELECTED')
 
 
 
