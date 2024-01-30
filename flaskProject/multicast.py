@@ -39,13 +39,15 @@ class MulticastClient:
 
                 # If the first part of the message is 'HB', update the last heartbeat timestamp
                 if message_parts[0] == 'HB':
-                    network.add_host(message_parts[2])
-                    network.last_heartbeat[host] = time.time()
-                    network.check_heartbeats()
                     # set leader if given by hb
                     if message_parts[3] != 'None':
                         network.leader = message_parts[3]
                         print('LEADER AUS HB: ' + network.leader)
+
+                    network.add_host(message_parts[2])
+                    network.last_heartbeat[host] = time.time()
+                    network.check_heartbeats()
+
 
 
             except socket.timeout:
