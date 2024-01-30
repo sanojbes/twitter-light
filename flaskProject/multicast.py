@@ -44,9 +44,9 @@ class MulticastClient:
                     network.check_heartbeats()
                     print('leader ist ' + str(network.leader))
                     # set leader if given by hb
-                    if network.leader is None:
-                        if message_parts[3] != 'None':
-                            network.leader = message_parts[3]
+                    if message_parts[3] != 'None':
+                        network.leader = message_parts[3]
+
 
             except socket.timeout:
                 continue
@@ -54,12 +54,5 @@ class MulticastClient:
     def start(self, network):
         thread = threading.Thread(target=self.receive_messages, args=(network,))
         thread.start()
-
-if __name__ == "__main__":
-    multicast_group = '224.0.0.100'  # Replace with your chosen multicast group
-    server_address = (multicast_group, 10000)  # Replace 10000 with your chosen port number
-
-    client = MulticastClient(multicast_group, server_address)
-    client.start()
       
         

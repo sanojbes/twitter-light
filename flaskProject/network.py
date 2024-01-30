@@ -104,14 +104,15 @@ class Network:
             print(f"Host {client} was already removed")
 
     def check_first_host(self):
-        time.sleep(4)
+        time.sleep(2)
         if self.leader is None:
             self.elect_leader()
 
 
+
     def check_heartbeats(self):
         for host in list(self.last_heartbeat.keys()):
-            if time.time() - self.last_heartbeat[host] > 5:  # No heartbeat within the last 3 seconds
+            if time.time() - self.last_heartbeat[host] > 2:  # No heartbeat within the last 2 seconds
                 self.remove_host(host)
                 del self.last_heartbeat[host]
 
@@ -131,8 +132,6 @@ class Network:
         if host not in self.replication_network:
             self.replication_network.append(host)
 
-        #else:
-            #print(f"Host {host} was already discovered")
 
     def remove_host(self, host):
         """
@@ -169,18 +168,3 @@ class Network:
         for server in self.replication_network:
             print(server)
             requests.post(f'http://{server}:5000/update-users', data=users_string)
-
-
-if __name__ == "__main__":
-    #Instanz Network + Multicast
-    server = Network()
-    multicastclient = multicast.MulticastClient('224.0.0.100', ('224.0.0.100', 10000))
-    #Send multicast (Heartbeat)
-    multicastclient.send_message(server)
-    #Listen to Multicast (Heartbeat)
-    multicastclient.start(server)
-    #Check First Host
-    server.check_first_host()
-    #print(str(server.leader) + " ist leader")
-    #
-    #print(server.replication_network)
