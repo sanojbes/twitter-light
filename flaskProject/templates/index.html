@@ -20,6 +20,7 @@
     <script>
     // Declare serverList as a global variable accessible in the entire script
     let serverList = [];
+    let leader
     setInterval(getallservers, 3000);
     // Get the list of available servers
     async function getallservers() {
@@ -66,7 +67,9 @@
             let fetchPromise = fetch(`http://${server.ip}:5000/get_new_leader_info`)
                 .then(response => {
                     if (response.ok) {
-                        return response.text();
+                        leader = response.text();
+                        console.log(leader)
+                        return leader;
                     } else {
                         throw new Error('Server not available');
                     }
@@ -82,12 +85,12 @@
         try {
             // Wait for all promises to resolve
             let results = await Promise.all(promises);
-
+            console.log('test')
             // Find the first successful response
             for (let i = 0; i < results.length; i++) {
                 if (results[i]) {
                     // Redirect to the new leader only if an available server is found
-                    window.location.href = `http://${serverList[i].ip}:5000`;
+                    window.location.href = `http://${leader}:5000`;
                     return;
                 }
             }
