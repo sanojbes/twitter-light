@@ -50,30 +50,25 @@
     }
 
     // Function to check each server until an available one is found
-    function checkServers() {
-        // Check if serverList is undefined or empty
+    // ...
+
+    async function checkServers() {
         if (!serverList || serverList.length === 0) {
             console.error('Server list is empty or undefined');
             return;
         }
 
-        let availableServerFound = false;
+        let promises = [];
 
         for (let server of serverList) {
             console.log(server.ip);
-            fetch(`http://${server.ip}:5000/get_new_leader_info`)
+
+            let fetchPromise = fetch(`http://${server.ip}:5000/get_new_leader_info`)
                 .then(response => {
                     if (response.ok) {
-                        availableServerFound = true;
                         return response.text();
                     } else {
                         throw new Error('Server not available');
-                    }
-                })
-                .then(newLeader => {
-                    if (availableServerFound) {
-                        // Redirect to the new leader only if an available server is found
-                        window.location.href = `http://${newLeader}:5000`;
                     }
                 })
                 .catch(error => {
@@ -81,11 +76,29 @@
                     // If the server is not available, move to the next one
                 });
 
-            if (availableServerFound) {
-                // Stop checking if an available server is found
-                break;
-            }
+            promises.push(fetchPromise);
         }
+
+        try {
+            // Wait for all promises to resolve
+            let results = await Promise.all(promises);
+
+            // Find the first successful response
+            for (let i = 0; i < results.length; i++) {
+                if (results[i]) {
+                    // Redirect to the new leader only if an available server is found
+                    window.location.href = `http://${serverList[i].ip}:5000`;
+                    return;
+                }
+            }
+
+            // If no available server is found, handle it here
+            console.error('No available servers found');
+        } catch (error) {
+            // Handle errors that occurred while fetching server info
+            console.error('Error checking servers:', error);
+        }
+
     }
     </script>
 
