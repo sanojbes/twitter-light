@@ -61,9 +61,12 @@ def update_users():
     return '', 200
 
 
+from flask import jsonify
+
 @app.route('/get_new_leader_info', methods=['GET'])
 def get_new_leader_info():
-    return server.leader, 200
+    return jsonify({'leader': server.leader}), 200
+
 
 @app.route('/all_servers_available', methods=['GET'])
 def get_all_servers_available():

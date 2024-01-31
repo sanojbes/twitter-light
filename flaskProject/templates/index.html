@@ -20,7 +20,7 @@
     <script>
         // Declare serverList as a global variable accessible in the entire script
         let serverList = [];
-        let leader
+
         setInterval(getallservers, 3000);
 
         // Get the list of available servers
@@ -50,39 +50,36 @@
                 checkServers();
             }
         }
-        function sendGetRequest(ip, path, callback) {
-            const xhr = new XMLHttpRequest();
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        const newIp = xhr.responseText;
-                        callback(null, newIp);
+        async function checkServers() {
+            for (const server of serverList) {
+                try {
+                    const response = await fetch(`http://${server.ip}/get_new_leader_info`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const newLeaderInfo = await response.json();
+                        const newLeaderIP = newLeaderInfo.leader;
+
+                        console.log(newLeaderIP);
+
+                        // Redirect to the new leader's IP and port 5000
+                        window.location.href = `http://${newLeaderIP}:5000`;
+                        return;  // Stop iterating if successful redirect
                     } else {
-                        callback(new Error(`Error: ${xhr.status} - ${xhr.statusText}`), null);
+                        console.error('Unexpected response:', response.status, response.statusText);
                     }
+                } catch (error) {
+                    console.error('Error checking server:', error);
                 }
-            };
-
-            xhr.open('GET', `http://${ip}/get_new_leader_info`, true);
-            xhr.send();
-        }
-
-        function checkServers() {
-            for (const ip of serverList) {
-                const path = '/get_new_leader_info';
-
-                sendGetRequest(ip, path, (error, newIp) => {
-                    if (error) {
-                        console.error(`Error sending GET request to ${ip}: ${error.message}`);
-                    } else {
-                        console.log(`Received new IP from ${ip}: ${newIp}`);
-                        const redirectUrl = `http://${newIp}:5000`;
-                        console.log(`Redirecting to: ${redirectUrl}`);
-                        window.location.href = redirectUrl;
-                    }
-                });
             }
+
+            // If no new leader found, handle accordingly (e.g., display an error message)
+            console.error('No new leader found.');
         }
 
     </script>
