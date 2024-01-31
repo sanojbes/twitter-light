@@ -50,8 +50,11 @@
                 checkServers();
             }
         }
-
+        async function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
         async function checkServers() {
+            await delay(3000);
             for (const server of serverList) {
                 try {
                     const response = await fetch(`http://${server.ip}:5000/get_new_leader_info`, {
