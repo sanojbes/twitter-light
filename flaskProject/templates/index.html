@@ -18,91 +18,73 @@
 
     </style>
     <script>
-    // Declare serverList as a global variable accessible in the entire script
-    let serverList = [];
-    let leader
-    setInterval(getallservers, 3000);
-    // Get the list of available servers
-    async function getallservers() {
-        try {
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Request timeout')), 5000)
-            );
-            // Abfrage auf Server dauert länger als 5 Sekunden
-            const response = await Promise.race([
-                fetch('/all_servers_available'),
-                timeoutPromise
-            ]);
+        // Declare serverList as a global variable accessible in the entire script
+        let serverList = [];
+        let leader
+        setInterval(getallservers, 3000);
 
-            if (response.status === 503) {
-                console.error('Service Unavailable');
-                checkServers();
-            } else {
-                const servers = await response.json();
-                if (servers) {
-                    serverList = servers;
-                    console.log(serverList)
-                }
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            checkServers();
-        }
-    }
+        // Get the list of available servers
+        async function getallservers() {
+            try {
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Request timeout')), 5000)
+                );
+                // Abfrage auf Server dauert länger als 5 Sekunden
+                const response = await Promise.race([
+                    fetch('/all_servers_available'),
+                    timeoutPromise
+                ]);
 
-    // Function to check each server until an available one is found
-    // ...
-
-    async function checkServers() {
-        if (!serverList || serverList.length === 0) {
-            console.error('Server list is empty or undefined');
-            return;
-        }
-
-        let promises = [];
-
-        for (let server of serverList) {
-            console.log(server.ip);
-
-            let fetchPromise = fetch(`http://${server.ip}:5000/get_new_leader_info`)
-                .then(response => {
-                    if (response.ok) {
-                        leader = response.text();
-                        console.log(leader)
-                        return leader;
-                    } else {
-                        throw new Error('Server not available');
+                if (response.status === 503) {
+                    console.error('Service Unavailable');
+                    checkServers();
+                } else {
+                    const servers = await response.json();
+                    if (servers) {
+                        serverList = servers;
+                        console.log(serverList)
                     }
-                })
-                .catch(error => {
-                    console.error(`Error with server ${server.ip}:`, error);
-                    // If the server is not available, move to the next one
-                });
-
-            promises.push(fetchPromise);
-        }
-
-        try {
-            // Wait for all promises to resolve
-            let results = await Promise.all(promises);
-            console.log('test')
-            // Find the first successful response
-            for (let i = 0; i < results.length; i++) {
-                if (results[i]) {
-                    // Redirect to the new leader only if an available server is found
-                    window.location.href = `http://${leader}:5000`;
-                    return;
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                checkServers();
             }
+        }
+        function sendGetRequest(ip, path, callback) {
+            const xhr = new XMLHttpRequest();
 
-            // If no available server is found, handle it here
-            console.error('No available servers found');
-        } catch (error) {
-            // Handle errors that occurred while fetching server info
-            console.error('Error checking servers:', error);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const newIp = xhr.responseText;
+                        callback(null, newIp);
+                    } else {
+                        callback(new Error(`Error: ${xhr.status} - ${xhr.statusText}`), null);
+                    }
+                }
+            };
+
+            xhr.open('GET', `http://${ip}/get_new_leader_info`, true);
+            xhr.send();
         }
 
-    }
+        function checkServers() {
+            for (const ip of serverList) {
+                const path = '/get_new_leader_info';
+
+                sendGetRequest(ip, path, (error, newIp) => {
+                    if (error) {
+                        console.error(`Error sending GET request to ${ip}: ${error.message}`);
+                    } else {
+                        console.log(`Received new IP from ${ip}: ${newIp}`);
+                        const redirectUrl = `http://${newIp}:5000`;
+                        console.log(`Redirecting to: ${redirectUrl}`);
+                        window.location.href = redirectUrl;
+                    }
+                });
+            }
+        }
+
     </script>
 
 </head>
@@ -132,7 +114,7 @@
                         </div>
                     {% endfor %}
                     <form class="input-group mb-1 mt-3" action="/comments/{{ post.post_id }}" method="POST">
-                         <!--Alternativtext bearbeiten  aria-label="Recipient's username" -->
+                        <!--Alternativtext bearbeiten  aria-label="Recipient's username" -->
                         <input type="text" class="form-control" placeholder="Verfasse einen Kommentar"
                                aria-label="Recipient's username"
                                aria-describedby="button-addon2" name="comment_content" id="comment_content">
