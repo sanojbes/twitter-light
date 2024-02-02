@@ -8,6 +8,7 @@ class MulticastClient:
         self.server_address = server_address
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(0.2)
+        self.heartbeat_counter = 0
 
         # Bind to the wildcard address
         self.sock.bind(('', server_address[1]))
@@ -32,8 +33,10 @@ class MulticastClient:
         while True:
             try:
                 data, host = self.sock.recvfrom(1024)
-                #print(f'Received message: {data.decode("utf-8")} from {host}')
-
+                #print heartbeat for presentation purpose
+                if int(self.heartbeat_counter) % 4 == 0:
+                    print(f'Received message: {data.decode("utf-8")} from {host}')
+                self.heartbeat_counter = self.heartbeat_counter + 1
                 # Split the message into an array
                 message_parts = data.decode("utf-8").split(':')
 
