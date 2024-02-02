@@ -97,6 +97,7 @@ def heartbeat():
 
 
 if __name__ == '__main__':
+    print('SERVER STARTING')
     # Ausführung des zusätzlichen Codes in einem anderen Thread
     additional_thread = threading.Thread(target=heartbeat())
     additional_thread.start()

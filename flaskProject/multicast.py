@@ -41,8 +41,9 @@ class MulticastClient:
                 if message_parts[0] == 'HB':
                     # set leader if given by hb
                     if message_parts[3] != 'None':
-                        network.leader = message_parts[3]
-                        print('LEADER AUS HB: ' + network.leader)
+                        if message_parts[3] != network.leader:
+                            network.leader = message_parts[3]
+                            print('LEADER ELECTED FROM HB: ' + str(network.leader))
 
                     network.add_host(message_parts[2])
                     network.last_heartbeat[host] = time.time()

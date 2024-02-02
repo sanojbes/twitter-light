@@ -41,6 +41,7 @@ class Network:
         self.replication_network = []  # List of hosts in the network
         self.last_heartbeat = {}  # Stores the last heartbeat timestamp from each host
         self.leader = None  # The leader host
+        self.heartbeat_counter = 0
         threading.Thread(target=self.check_heartbeats).start()
 
     def add_client(self, host):
@@ -107,7 +108,7 @@ class Network:
         time.sleep(2)
         if self.leader is None:
             self.elect_leader()
-            print('INITIAL LEADER SELECTED')
+            print('INITIAL LEADER ELECTED: ' + str(self.leader))
 
 
 
@@ -115,6 +116,7 @@ class Network:
         for host in list(self.last_heartbeat.keys()):
             if time.time() - self.last_heartbeat[host] > 2:  # No heartbeat within the last 2 seconds
                 self.remove_host(host)
+
                 del self.last_heartbeat[host]
 
     def elect_leader(self):
@@ -123,7 +125,6 @@ class Network:
         """
         if self.replication_network:  # Check if there are any hosts in the network
             self.leader = max(self.replication_network)  # The host with the highest ID becomes the leader
-            print('Leader elected: ' + str(self.leader))
 
 
     def add_host(self, host):
@@ -132,6 +133,8 @@ class Network:
         """
         if host not in self.replication_network:
             self.replication_network.append(host)
+            print('Added new host: ' + host)
+            print('Current hosts: ' + str(self.replication_network))
 
 
     def remove_host(self, host):
@@ -139,10 +142,12 @@ class Network:
         Removes a host from the network and triggers a leader election if the leader was removed.
         """
         if host[0] in self.replication_network:
+            print('List before Host gets deleted: ' + str(self.replication_network))
             self.replication_network.remove(host[0])
+            print('List after Host gets deleted: ' + str(self.replication_network))
             if host[0] == self.leader:
                 self.elect_leader()
-                print('ELECT NEW LEADER')
+                print('ELECT NEW LEADER: ' +str(self.leader))
 
     def create_message(self):
         heartbeat_message = {
@@ -152,6 +157,11 @@ class Network:
         }
         heartbeat_msg = f"HB:{heartbeat_message['id']}:{heartbeat_message['sender']}:{heartbeat_message['leader']}"
 
+
+        if int(self.heartbeat_counter) %5 == 0:
+            print(heartbeat_msg)
+        self.heartbeat_counter = self.heartbeat_counter + 1
+
         return heartbeat_msg
 
     def create_update_message(self):
@@ -159,7 +169,6 @@ class Network:
             users_json = json.load(file)
         users_string = json.dumps(users_json)
 
-        print(users_string)
         return users_string
 
 
@@ -168,3 +177,4 @@ class Network:
         users_string = self.create_update_message()
         for server in self.replication_network:
             requests.post(f'http://{server}:5000/update-users', data=users_string)
+            print('updated data in server: ' + str(server))
